@@ -4,22 +4,17 @@ public class Bullet : MonoBehaviour
 {
     public float moveSpeed = 1000f;
 
-    private Vector2 moveDir;
+    private Vector3 moveDir;
 
     private bool fired = false;
 
-    private RectTransform myRectTransform;
+    private Vector3 currentPos;
 
-    private Vector2 currentPos;
+    private float limit = 6f;
 
     public bool Fired
     {
         get { return fired; }
-    }
-
-    private void Awake()
-    {
-        myRectTransform = GetComponent<RectTransform>();
     }
 
     public void Fire(Vector2 position, Vector2 movePosition)
@@ -28,11 +23,11 @@ public class Bullet : MonoBehaviour
 
         this.moveDir = (movePosition - position).normalized;
 
-        myRectTransform.anchoredPosition = position;
+        transform.position = position;
 
-        float angle = Vector2.SignedAngle(Vector2.right, moveDir);
+        float angle = Vector2.SignedAngle(Vector2.up, moveDir);
 
-        myRectTransform.rotation = Quaternion.Euler(0f, 0f, angle);
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
         fired = true;
     }
@@ -41,14 +36,14 @@ public class Bullet : MonoBehaviour
     {
         if (fired)
         {
-            currentPos = myRectTransform.anchoredPosition + moveDir * moveSpeed * Time.deltaTime;
+            currentPos = transform.position + moveDir * moveSpeed * Time.deltaTime;
 
-            myRectTransform.anchoredPosition = currentPos;
+            transform.position = currentPos;
 
-            if( myRectTransform.anchoredPosition.x < -Screen.width / 2 ||
-                myRectTransform.anchoredPosition.x > Screen.width / 2 ||
-                myRectTransform.anchoredPosition.y < -Screen.height / 2 ||
-                myRectTransform.anchoredPosition.y > Screen.height / 2 )
+            if( transform.position.x < -limit ||
+                transform.position.x > limit ||
+                transform.position.y < -limit ||
+                transform.position.y > limit )
             {
                 BulletRest();
             }

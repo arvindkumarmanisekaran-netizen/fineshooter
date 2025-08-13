@@ -43,8 +43,6 @@ public class Car : MonoBehaviour
 
     public Vector2[] orientations;
 
-    private Vector2 topLimit, botLimit;
-
     private int assignedPathIndex = 0;
 
     private float spawnTime;
@@ -64,7 +62,6 @@ public class Car : MonoBehaviour
         get { return carState == eCarState.None; }
     }
 
-
     public eCarState CarState
     {
         get { return carState; }
@@ -73,9 +70,6 @@ public class Car : MonoBehaviour
     private void Awake()
     {
         car = GetComponent<SpriteRenderer>();
-
-        topLimit = new Vector2((Screen.width / 2f) + 130f, (Screen.height / 2f) + 130f);
-        botLimit = new Vector2(-(Screen.width / 2f) - 130f, -(Screen.height / 2f) - 130f);
     }
 
     public void StartMoving(DOTweenPath path, int assignedPathIndex)

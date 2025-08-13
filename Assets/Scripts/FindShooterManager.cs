@@ -22,6 +22,8 @@ public class FindShooterManager : MonoBehaviour
 
     private int numTries = 100;
 
+    private Vector3 offset = new Vector3(-0.5f, -0.5f, 0f);
+
     public void Awake()
     {
         int seed = DateTime.Now.Millisecond;
@@ -89,9 +91,7 @@ public class FindShooterManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Vector2 clickPosition = Input.mousePosition;
-            clickPosition.x = clickPosition.x - Screen.width / 2;
-            clickPosition.y = clickPosition.y - Screen.height / 2;
+            Vector2 clickPosition = offset + Camera.main.ScreenToViewportPoint(Input.mousePosition);
 
             Bullet bullet = GetFreeBullet();
 
