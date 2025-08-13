@@ -12,6 +12,7 @@ public class UIColliderResizer : MonoBehaviour
     {
         rectTransform = GetComponent<RectTransform>();
         boxCollider = GetComponent<BoxCollider2D>();
+        
 
         if (runOnce)
             Run();

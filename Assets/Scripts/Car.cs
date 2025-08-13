@@ -1,6 +1,8 @@
 using UnityEngine;
 using Radishmouse;
 using UnityEngine.UI;
+using System;
+//using Physics2D = RotaryHeart.Lib.PhysicsExtension.Physics2D;
 
 
 public class Car : MonoBehaviour
@@ -14,11 +16,23 @@ public class Car : MonoBehaviour
         Down
     }
 
+    public enum eCarState
+    {
+        None,
+        Moving,
+        Paused
+    }
+
+    public eCarState carState = eCarState.None;
+
     private UILineRenderer assignedPath;
 
     private RectTransform myRectTransform;
 
-    public float moveSpeed = 2f;
+    public float minMoveSpeed = 10f;
+    public float maxMoveSpeed = 100f;
+    private float moveSpeed = 2f;
+    public float currentMoveSeed = 0f;
 
     public Sprite car_down;
     public Sprite car_up;
@@ -34,23 +48,48 @@ public class Car : MonoBehaviour
 
     public Vector2[] orientations;
 
-    public bool Moving
+    private int assignedPathIndex = 0;
+
+    private float spawnTime;
+
+    public float SpawnTime
     {
-        get { return moving; }
+        get { return spawnTime; }
     }
 
-    private bool moving = false;
-    
+    public int AssignedPathIndex
+    {
+        get { return assignedPathIndex; }
+    }
+
+    public bool isFree
+    {
+        get { return carState == eCarState.None; }
+    }
+
+
+    public eCarState CarState
+    {
+        get { return carState; }
+    }
+
     private void Awake()
     {
         myRectTransform = GetComponent<RectTransform>();
     }
 
-    public void StartMoving(UILineRenderer path)
+    public void StartMoving(UILineRenderer path, int assignedPathIndex)
     {
+        spawnTime = Time.time;
+
         assignedPath = path;
 
-        moving = true;
+        moveSpeed = UnityEngine.Random.Range(minMoveSpeed, maxMoveSpeed);
+        currentMoveSeed = moveSpeed;
+
+        this.assignedPathIndex = assignedPathIndex;
+
+        carState = eCarState.Moving;
 
         gameObject.SetActive(true);
 
@@ -66,7 +105,7 @@ public class Car : MonoBehaviour
         {
             if (currentIndex + 1 >= assignedPath.points.Length)
             {
-                moving = false;
+                carState = eCarState.None;
                 gameObject.SetActive(false);
 
                 FindShooterManager.CarFreed();
@@ -128,19 +167,82 @@ public class Car : MonoBehaviour
     {
         if (assignedPath != null)
         {
-            currentPos = myRectTransform.anchoredPosition + moveDir * moveSpeed * Time.deltaTime;
+            if(carState == eCarState.Paused)
+            {
+                float timeElapsedOtherCar = Time.time - otherCarEncounterTime;
+                float timeElapsedSameRouteCar = Time.time - sameRouteCarEncouterTime;
 
-            if ((currentPos - nextPos).sqrMagnitude < 100f)
-            {
-                myRectTransform.anchoredPosition = nextPos;
-                currentIndex += 1;
-                SetCar();
+                if (timeElapsedOtherCar > 2f)
+                {
+                    SetCarState(eCarState.Moving);
+                }
+                else if (timeElapsedSameRouteCar > 2f)
+                {
+                    SetCarState(eCarState.Moving);
+                }
             }
-            else
+
+            if (carState == eCarState.Moving)
             {
-                myRectTransform.anchoredPosition = currentPos;
+                currentPos = myRectTransform.anchoredPosition + moveDir * currentMoveSeed * Time.deltaTime;
+
+                if ((currentPos - nextPos).sqrMagnitude < 100f)
+                {
+                    myRectTransform.anchoredPosition = nextPos;
+                    currentIndex += 1;
+                    SetCar();
+                }
+                else
+                {
+                    myRectTransform.anchoredPosition = currentPos;
+                }
             }
         }
     }
 
+    private float carPauseTime = 0f;
+    private float otherCarEncounterTime = 0f;
+    private float sameRouteCarEncouterTime = 0f;
+    public void SetCarState(eCarState state)
+    {
+        carState = state;
+
+        switch (carState)
+        {
+            case eCarState.Paused:
+                carPauseTime = 0f;
+                break;
+        }
+    }
+
+    public void EncounteredCar(Car otherCar)
+    {
+        int otherCarRoute = otherCar.AssignedPathIndex;
+        float otherCarSpawnTime = otherCar.SpawnTime;
+        eCarState otherCarState = otherCar.CarState;
+
+        if(otherCarRoute == assignedPathIndex)
+        {
+            if (spawnTime > otherCarSpawnTime)
+            {
+                if(otherCarState == eCarState.Paused)
+                {
+                    SetCarState(eCarState.Paused);
+
+                    sameRouteCarEncouterTime = Time.time;
+                }
+
+                currentMoveSeed = otherCar.moveSpeed;
+            }
+        }
+        else
+        {
+            if (spawnTime > otherCarSpawnTime)
+            {
+                otherCarEncounterTime = Time.time;
+
+                SetCarState(eCarState.Paused);
+            }
+        }
+    }
 }

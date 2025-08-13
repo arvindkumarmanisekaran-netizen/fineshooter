@@ -1,3 +1,16 @@
 {
-	"name": "FineShooter"
+    "name": "FineShooter",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a1f266c21d2a1f74bae1663e4424fb2a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

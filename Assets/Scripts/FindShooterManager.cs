@@ -60,7 +60,7 @@ public class FindShooterManager : MonoBehaviour
         {
             int randomIndex = Random.Range(0, cars.Length);
 
-            if (!cars[randomIndex].Moving)
+            if (cars[randomIndex].isFree)
                 return cars[randomIndex];
         }
 
@@ -73,11 +73,12 @@ public class FindShooterManager : MonoBehaviour
 
         if (car != null)
         {
-            var path = pathManager.GetRandomPath();
+            int pathIndex = 0;
+            var path = pathManager.GetRandomPath(out pathIndex);
 
             if (path != null)
             {
-                car.StartMoving(path);
+                car.StartMoving(path, pathIndex);
                 
                 numCarsMoving += 1;
             }

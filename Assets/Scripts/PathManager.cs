@@ -14,14 +14,16 @@ public class PathManager : MonoBehaviour
 
     private int previousReturnedPath = -1;
 
-    public UILineRenderer GetRandomPath()
+    public UILineRenderer GetRandomPath(out int pathIndex)
     {
         int randomPath = Random.Range(0, paths.Length);
 
         if (randomPath == previousReturnedPath)
-            return GetRandomPath();
+            return GetRandomPath(out pathIndex);
 
         previousReturnedPath = randomPath;
+
+        pathIndex = randomPath;
 
         return GetPath(randomPath);
     }
