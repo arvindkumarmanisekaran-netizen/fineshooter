@@ -1,20 +1,20 @@
 using UnityEngine;
-using Radishmouse;
 using System;
 using Random = UnityEngine.Random;
+using DG.Tweening;
 
 public class PathManager : MonoBehaviour
 {
-    public UILineRenderer[] paths;
+    public DOTweenPath[] paths;
 
-    public UILineRenderer GetPath(int index)
+    private int previousReturnedPath = -1;
+
+    public DOTweenPath GetPath(int index)
     {
         return paths[index];
     }
 
-    private int previousReturnedPath = -1;
-
-    public UILineRenderer GetRandomPath(out int pathIndex)
+    public DOTweenPath GetRandomPath(out int pathIndex)
     {
         int randomPath = Random.Range(0, paths.Length);
 

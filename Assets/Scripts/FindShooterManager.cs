@@ -10,7 +10,7 @@ public class FindShooterManager : MonoBehaviour
 
     public Bullet[] bullets;
 
-    public RectTransform tower;
+    public Transform tower;
 
     private static int numCarsMoving = 0;
 
@@ -97,7 +97,7 @@ public class FindShooterManager : MonoBehaviour
 
             if (bullet != null)
             {
-                bullet.Fire(tower.anchoredPosition, clickPosition);
+                bullet.Fire(tower.position, clickPosition);
             }
         }
 

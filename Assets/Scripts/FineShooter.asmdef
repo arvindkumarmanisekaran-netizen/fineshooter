@@ -2,7 +2,8 @@
     "name": "FineShooter",
     "rootNamespace": "",
     "references": [
-        "GUID:a1f266c21d2a1f74bae1663e4424fb2a"
+        "GUID:a1f266c21d2a1f74bae1663e4424fb2a",
+        "GUID:3f70729f01c7ed440981f4819a59de4a"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
