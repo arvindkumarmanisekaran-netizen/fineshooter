@@ -32,6 +32,8 @@ public class Car : MonoBehaviour
 
     public eCarOrientation carOrientation;
 
+    public Vector2[] orientations;
+
     private void Awake()
     {
         myRectTransform = GetComponent<RectTransform>();
@@ -75,28 +77,29 @@ public class Car : MonoBehaviour
 
             Vector2 scale = myRectTransform.localScale;
 
+            Vector2 currentOrientation = orientations[(int)carOrientation];
+
             switch (carOrientation)
             {
                 case eCarOrientation.Top:
                     car.sprite = car_up;
-                    myRectTransform.localScale = new Vector2 (-Mathf.Abs(scale.x), Mathf.Abs(scale.y));
                     break;
 
                 case eCarOrientation.Right:
                     car.sprite = car_down;
-                    myRectTransform.localScale = new Vector2(Mathf.Abs(scale.x), Mathf.Abs(scale.y));
                     break;
 
                 case eCarOrientation.Down:
                     car.sprite = car_down;
-                    myRectTransform.localScale = new Vector2(-Mathf.Abs(scale.x), Mathf.Abs(scale.y));
                     break;
 
                 case eCarOrientation.Left:
                     car.sprite = car_up;
-                    myRectTransform.localScale = new Vector2(Mathf.Abs(scale.x), Mathf.Abs(scale.y));
                     break;
             }
+
+            myRectTransform.localScale = new Vector2(   currentOrientation.x * Mathf.Abs(scale.x),
+                                                        currentOrientation.y * Mathf.Abs(scale.y));
         }
     }
 
@@ -106,7 +109,9 @@ public class Car : MonoBehaviour
         {
             currentPos = myRectTransform.anchoredPosition + moveDir * moveSpeed * Time.deltaTime;
 
-            if((currentPos - nextPos).sqrMagnitude < 0.1f)
+            //print((currentPos - nextPos).sqrMagnitude);
+
+            if ((currentPos - nextPos).sqrMagnitude < 100f)
             {
                 myRectTransform.anchoredPosition = nextPos;
                 currentIndex += 1;
