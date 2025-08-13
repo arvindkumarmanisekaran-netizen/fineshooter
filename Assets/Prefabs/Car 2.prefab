@@ -96,7 +96,11 @@ MonoBehaviour:
   car_up: {fileID: 1964479107, guid: 590bc166ad444004e99fb29e4abc446c, type: 3}
   car: {fileID: 6586249194348670584}
   carOrientation: 0
-  orientations: []
+  orientations:
+  - {x: -1, y: 1}
+  - {x: -1, y: 1}
+  - {x: 1, y: 1}
+  - {x: 1, y: 1}
 --- !u!61 &8797867461410075932
 BoxCollider2D:
   m_ObjectHideFlags: 0

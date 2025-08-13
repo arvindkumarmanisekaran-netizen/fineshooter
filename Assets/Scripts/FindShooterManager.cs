@@ -1,18 +1,34 @@
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class FindShooterManager : MonoBehaviour
 {
     public PathManager pathManager;
 
-    public Car car;
+    public Car[] cars;
 
     public Bullet[] bullets;
 
     public RectTransform tower;
 
+    private static int numCarsMoving = 0;
+
+    public int maxCarsMoving = 10;
+
+    public float spawnDelay = 2f;
+
+    private float spawnTimer = 0f;
+
+    private int numTries = 100;
+
     public void Awake()
     {
-        car.StartMoving(pathManager.GetPath(0));
+        int seed = DateTime.Now.Millisecond;
+
+        Random.InitState(seed);
+
+        spawnTimer = 0f;
     }
 
     Bullet GetFreeBullet()
@@ -26,6 +42,46 @@ public class FindShooterManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public static void CarFreed()
+    {
+        numCarsMoving -= 1;
+    }
+
+    Car GetCar(int index)
+    {
+        return cars[index];
+    }
+
+    Car GetRandomCar()
+    {
+        for (int i = 0; i < numTries; i++)
+        {
+            int randomIndex = Random.Range(0, cars.Length);
+
+            if (!cars[randomIndex].Moving)
+                return cars[randomIndex];
+        }
+
+        return null;
+    }
+
+    void SpawnCar()
+    {
+        Car car = GetRandomCar();
+
+        if (car != null)
+        {
+            var path = pathManager.GetRandomPath();
+
+            if (path != null)
+            {
+                car.StartMoving(path);
+                
+                numCarsMoving += 1;
+            }
+        }
     }
 
     public void Update()
@@ -43,5 +99,13 @@ public class FindShooterManager : MonoBehaviour
                 bullet.Fire(tower.anchoredPosition, clickPosition);
             }
         }
+
+        if(spawnTimer <= 0f && numCarsMoving < maxCarsMoving)
+        {
+            SpawnCar();
+            spawnTimer = spawnDelay;
+        }
+
+        spawnTimer -= Time.deltaTime;
     }
 }

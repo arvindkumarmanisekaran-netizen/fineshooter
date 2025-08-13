@@ -34,6 +34,13 @@ public class Car : MonoBehaviour
 
     public Vector2[] orientations;
 
+    public bool Moving
+    {
+        get { return moving; }
+    }
+
+    private bool moving = false;
+    
     private void Awake()
     {
         myRectTransform = GetComponent<RectTransform>();
@@ -42,6 +49,10 @@ public class Car : MonoBehaviour
     public void StartMoving(UILineRenderer path)
     {
         assignedPath = path;
+
+        moving = true;
+
+        gameObject.SetActive(true);
 
         currentPos = assignedPath.points[0];
         myRectTransform.anchoredPosition = currentPos;
@@ -53,6 +64,16 @@ public class Car : MonoBehaviour
     {
         if (assignedPath != null)
         {
+            if (currentIndex + 1 >= assignedPath.points.Length)
+            {
+                moving = false;
+                gameObject.SetActive(false);
+
+                FindShooterManager.CarFreed();
+
+                return;
+            }
+
             Vector2 startPos = assignedPath.points[currentIndex];
             nextPos = assignedPath.points[currentIndex + 1];
 
@@ -108,8 +129,6 @@ public class Car : MonoBehaviour
         if (assignedPath != null)
         {
             currentPos = myRectTransform.anchoredPosition + moveDir * moveSpeed * Time.deltaTime;
-
-            //print((currentPos - nextPos).sqrMagnitude);
 
             if ((currentPos - nextPos).sqrMagnitude < 100f)
             {
