@@ -50,9 +50,19 @@ public class Bullet : MonoBehaviour
                 myRectTransform.anchoredPosition.y < -Screen.height / 2 ||
                 myRectTransform.anchoredPosition.y > Screen.height / 2 )
             {
-                gameObject.SetActive(false);
-                fired = false;
+                BulletRest();
             }
         }
+    }
+
+    public void BulletRest()
+    {
+        gameObject.SetActive(false);
+        fired = false;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        BulletRest();
     }
 }
