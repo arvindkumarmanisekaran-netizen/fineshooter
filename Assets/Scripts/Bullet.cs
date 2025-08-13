@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Bullet : MonoBehaviour
 {
@@ -17,16 +18,18 @@ public class Bullet : MonoBehaviour
         get { return fired; }
     }
 
-    public void Fire(Vector2 position, Vector2 movePosition)
+    private Vector3 offset = new Vector3(-0.5f, -0.5f, 0f);
+
+    public void Fire(Vector3 towerPosition)
     {
+        Vector3 pos1 = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        pos1.z = 0f;
         gameObject.SetActive(true);
 
-        this.moveDir = (movePosition - position).normalized;
-
-        transform.position = position;
+        transform.position = towerPosition;
+        this.moveDir = (pos1 - towerPosition).normalized;
 
         float angle = Vector2.SignedAngle(Vector2.up, moveDir);
-
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
         fired = true;

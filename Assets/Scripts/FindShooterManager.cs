@@ -120,13 +120,11 @@ public class FindShooterManager : MonoBehaviour
 
     void Fire()
     {
-        Vector2 clickPosition = offset + Camera.main.ScreenToViewportPoint(Input.mousePosition);
-
         Bullet bullet = GetFreeBullet();
 
         if (bullet != null)
         {
-            bullet.Fire(currentSelectedTower.transform.position, clickPosition);
+            bullet.Fire(currentSelectedTower.transform.position);
         }
     }
 

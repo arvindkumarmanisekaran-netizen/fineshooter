@@ -103,8 +103,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   carState: 0
-  minMoveSpeed: 1
-  maxMoveSpeed: 2
+  minMoveSpeed: 0.5
+  maxMoveSpeed: 0.8
   currentMoveSeed: 0
   car_down: {fileID: -59615654, guid: 590bc166ad444004e99fb29e4abc446c, type: 3}
   car_up: {fileID: -761170858, guid: 590bc166ad444004e99fb29e4abc446c, type: 3}
