@@ -3,8 +3,6 @@ using UnityEngine;
 using DG.Tweening;
 using Random = UnityEngine.Random;
 using TMPro;
-using PlasticGui.WorkspaceWindow.QueryViews;
-using NUnit.Framework;
 using System.Collections.Generic;
 
 public class FindShooterManager : MonoBehaviour
@@ -250,6 +248,12 @@ public class FindShooterManager : MonoBehaviour
 
     public void Update()
     {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+            return;
+        }
+
         if(Input.anyKeyDown)
         {
             string inputString = Input.inputString.ToLower();
