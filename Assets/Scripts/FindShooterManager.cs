@@ -70,8 +70,6 @@ public class FindShooterManager : MonoBehaviour
         SetCurrentFine();
 
         SetCurrentLevel();
-
-
     }
 
     private void OnEnable()
@@ -84,10 +82,16 @@ public class FindShooterManager : MonoBehaviour
         LevelManager.OnLevelComplete -= LevelComplete;
     }
 
-
     private void LevelComplete()
     {
-        
+        print("Level Complete: " + currentLevel);
+
+        currentLevel += 1;  
+
+        if(currentLevel <= levelManager.levels.Length)
+        {
+            SetCurrentLevel();
+        }
     }
 
     void StaticAnimations()
@@ -186,7 +190,7 @@ public class FindShooterManager : MonoBehaviour
                 case eVoilation.SPEEDING_BETWEEN_20_30:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, 0.2f, levelManager.GetFine(voilation));
+                    car.StartMoving(path, pathIndex, 0.25f, levelManager.GetFine(voilation));
                     break;
 
                 case eVoilation.SPEEDING_BETWEEN_50_60:
@@ -200,10 +204,48 @@ public class FindShooterManager : MonoBehaviour
                     path = pathManager.GetRandomPath(out pathIndex);
                     car.StartMoving(path, pathIndex, 0.6f, levelManager.GetFine(voilation));
                     break;
+
+                case eVoilation.SIGNAL_RED_LIGHT:
+                    car = GetRandomCar();
+                    path = pathManager.GetRandomPath(out pathIndex);
+                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), levelManager.GetFine(voilation));
+                    break;
+
+                case eVoilation.SIGNAL_PEDESTRIAN:
+                    car = GetRandomCar();
+                    path = pathManager.GetRandomPath(out pathIndex);
+                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.45f), levelManager.GetFine(voilation));
+                    break;
+
+                case eVoilation.OTHER_MOBILE:
+                    car = GetRandomCar();
+                    path = pathManager.GetRandomPath(out pathIndex);
+                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), levelManager.GetFine(voilation));
+                    break;
+
+                case eVoilation.OTHER_NO_SEAT_BELT:
+                    car = GetRandomCar();
+                    path = pathManager.GetRandomPath(out pathIndex);
+                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), levelManager.GetFine(voilation));
+                    break;
+
+                case eVoilation.PARKING_ILLEGAL:
+                    car = GetRandomCar();
+                    path = pathManager.GetRandomParkingPath();
+                    car.ParkedCar(path, levelManager.GetFine(voilation));
+                    break;
+
+                case eVoilation.PARKING_HARD_SHOULDER:
+                    car = GetRandomCar();
+                    path = pathManager.GetRandomParkingPath();
+                    car.ParkedCar(path, levelManager.GetFine(voilation));
+                    break;
             }
             
             spawnedCars.Add(car);
         }
+
+        levelManager.ManageLevel(spawnedCars);
     }
 
     public void Update()

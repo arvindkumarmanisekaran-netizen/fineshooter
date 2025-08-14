@@ -7,7 +7,11 @@ public class PathManager : MonoBehaviour
 {
     public DOTweenPath[] paths;
 
+    public DOTweenPath[] parkingPaths;
+
     private int previousReturnedPath = -1;
+
+    private int previousReturnedParkingPath = -1;
 
     public DOTweenPath GetPath(int index)
     {
@@ -26,5 +30,22 @@ public class PathManager : MonoBehaviour
         pathIndex = randomPath;
 
         return GetPath(randomPath);
+    }
+
+    public DOTweenPath GetParkingPath(int index)
+    {
+        return parkingPaths[index];
+    }
+
+    public DOTweenPath GetRandomParkingPath()
+    {
+        int randomPath = Random.Range(0, parkingPaths.Length);
+
+        if (randomPath == previousReturnedParkingPath)
+            return GetRandomParkingPath();
+
+        previousReturnedParkingPath = randomPath;
+
+        return GetParkingPath(randomPath);
     }
 }

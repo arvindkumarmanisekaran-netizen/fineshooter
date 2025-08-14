@@ -38,6 +38,7 @@ public class LevelManager : MonoBehaviour
     public delegate void LevelComplete();
     public static LevelComplete OnLevelComplete = null;
 
+    private List<Car> spawnedCars = new List<Car>();
 
     public int GetFine(eVoilation voilation)
     {
@@ -52,15 +53,26 @@ public class LevelManager : MonoBehaviour
 
     public void ManageLevel(List<Car> spawnedCars)
     {
-        foreach (Car car in spawnedCars)
+        this.spawnedCars = spawnedCars;
+    }
+
+    private void Update()
+    {
+        if(this.spawnedCars.Count > 0)
         {
-            if (!car.isFree)
+            foreach (Car car in spawnedCars)
             {
-                return;
+                if (!car.isFree)
+                {
+                    return;
+                }
+            }
+
+            if (OnLevelComplete != null)
+            {
+                spawnedCars.Clear();
+                OnLevelComplete.Invoke();
             }
         }
-
-        if (OnLevelComplete != null)
-            OnLevelComplete.Invoke();
     }
 }
