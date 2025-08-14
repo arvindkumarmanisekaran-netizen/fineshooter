@@ -17,14 +17,6 @@ public class FindShooterManager : MonoBehaviour
 
     private Tower currentSelectedTower;
 
-    private static int numCarsMoving = 0;
-
-    public int maxCarsMoving = 10;
-
-    public float spawnDelay = 2f;
-
-    private float spawnTimer = 0f;
-
     private int numTries = 100;
 
     private Vector3 offset = new Vector3(-0.5f, -0.5f, 0f);
@@ -51,14 +43,13 @@ public class FindShooterManager : MonoBehaviour
 
     private List<Car> spawnedCars = new List<Car>();
 
+    public LineRenderer rayFromTower;
 
     public void Awake()
     {
         int seed = DateTime.Now.Millisecond;
 
         Random.InitState(seed);
-
-        spawnTimer = 0f;
 
         StaticAnimations();
 
@@ -94,7 +85,9 @@ public class FindShooterManager : MonoBehaviour
 
     void StaticAnimations()
     {
-        DOTween.ToAlpha(() => bk_glow.color, x => bk_glow.color = x, bk_glow_fade_amount, bk_glow_duration).SetLoops(-1, LoopType.Yoyo);
+
+        bk_glow.DOKill();
+        bk_glow.DOFade(bk_glow_fade_amount, bk_glow_duration).SetEase(bk_glow_ease);
 
         noise_1.DOKill();
         noise_1.transform.DOBlendableLocalMoveBy(noise_1_moveby, noise_1_duration).SetEase(noise_1_ease).SetLoops(-1, LoopType.Yoyo);
@@ -115,17 +108,7 @@ public class FindShooterManager : MonoBehaviour
 
         return null;
     }
-
-    public static void CarFreed()
-    {
-        numCarsMoving -= 1;
-    }
-
-    Car GetCar(int index)
-    {
-        return cars[index];
-    }
-
+    
     Car GetRandomCar()
     {
         for (int i = 0; i < numTries; i++)
@@ -137,24 +120,6 @@ public class FindShooterManager : MonoBehaviour
         }
 
         return null;
-    }
-
-    void SpawnCar()
-    {
-        Car car = GetRandomCar();
-
-        if (car != null)
-        {
-            int pathIndex = 0;
-            var path = pathManager.GetRandomPath(out pathIndex);
-
-            if (path != null)
-            {
-                car.StartMoving(path, pathIndex);
-                
-                numCarsMoving += 1;
-            }
-        }
     }
 
     void Fire()
@@ -188,55 +153,55 @@ public class FindShooterManager : MonoBehaviour
                 case eVoilation.SPEEDING_BETWEEN_20_30:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, 0.25f, levelManager.GetFine(voilation));
+                    car.StartMoving(path, pathIndex, 0.25f, levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
                     break;
 
                 case eVoilation.SPEEDING_BETWEEN_50_60:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, 0.4f, levelManager.GetFine(voilation));
+                    car.StartMoving(path, pathIndex, 0.4f, levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
                     break;
 
                 case eVoilation.SPEEDING_GREATER_60:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, 0.6f, levelManager.GetFine(voilation));
+                    car.StartMoving(path, pathIndex, 0.6f, levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
                     break;
 
                 case eVoilation.SIGNAL_RED_LIGHT:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), levelManager.GetFine(voilation));
+                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
                     break;
 
                 case eVoilation.SIGNAL_PEDESTRIAN:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.45f), levelManager.GetFine(voilation));
+                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.45f), levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
                     break;
 
                 case eVoilation.OTHER_MOBILE:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), levelManager.GetFine(voilation));
+                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
                     break;
 
                 case eVoilation.OTHER_NO_SEAT_BELT:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), levelManager.GetFine(voilation));
+                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
                     break;
 
                 case eVoilation.PARKING_ILLEGAL:
                     car = GetRandomCar();
                     path = pathManager.GetRandomParkingPath();
-                    car.ParkedCar(path, levelManager.GetFine(voilation));
+                    car.ParkedCar(path, levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
                     break;
 
                 case eVoilation.PARKING_HARD_SHOULDER:
                     car = GetRandomCar();
                     path = pathManager.GetRandomParkingPath();
-                    car.ParkedCar(path, levelManager.GetFine(voilation));
+                    car.ParkedCar(path, levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
                     break;
             }
             
@@ -246,15 +211,25 @@ public class FindShooterManager : MonoBehaviour
         levelManager.ManageLevel(spawnedCars);
     }
 
+    void DrawRayFromTower()
+    {
+        rayFromTower.SetPosition(0, currentSelectedTower.transform.position);
+        Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        pos.z = 0f;
+        rayFromTower.SetPosition(1, pos);
+    }
+
     public void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
+        DrawRayFromTower();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
             return;
         }
 
-        if(Input.anyKeyDown)
+        if (Input.anyKeyDown)
         {
             string inputString = Input.inputString.ToLower();
 
@@ -320,13 +295,5 @@ public class FindShooterManager : MonoBehaviour
 
             SetCurrentFine();
         }
-
-        //if(spawnTimer <= 0f && numCarsMoving < maxCarsMoving)
-        //{
-        //    SpawnCar();
-        //    spawnTimer = spawnDelay;
-        //}
-
-        //spawnTimer -= Time.deltaTime;
     }
 }

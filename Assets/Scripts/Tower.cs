@@ -18,12 +18,14 @@ public class Tower : MonoBehaviour
 
     public void SelectTower()
     {
-        DOTween.ToAlpha(() => glow.color, x => glow.color = x, 1f, 0.5f);
+        glow.DOKill();
+        glow.DOFade(1f, 0.5f);
     }
 
     public void DeselectTower()
     {
-        DOTween.ToAlpha(() => glow.color, x => glow.color = x, 0f, 0.5f);
+        glow.DOKill();
+        glow.DOFade(0f, 0.3f);
     }
 
     public Tower GetTower(string key)

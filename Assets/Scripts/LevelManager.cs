@@ -21,6 +21,7 @@ public class LevelVoilation
 {
     public eVoilation voilation;
     public int fine;
+    public Color highlightColor = Color.white;
 }
 
 [System.Serializable]
@@ -49,6 +50,17 @@ public class LevelManager : MonoBehaviour
         }
 
         return 0;
+    }
+
+    public Color GetFineColor(eVoilation voilation)
+    {
+        foreach (LevelVoilation levelVoilation in levelVoilations)
+        {
+            if (levelVoilation.voilation == voilation)
+                return levelVoilation.highlightColor;
+        }
+
+        return Color.white;
     }
 
     public void ManageLevel(List<Car> spawnedCars)

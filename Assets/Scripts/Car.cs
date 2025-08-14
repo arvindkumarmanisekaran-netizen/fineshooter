@@ -29,10 +29,7 @@ public class Car : MonoBehaviour
 
     private SpriteRenderer car;
 
-    public float minMoveSpeed = 10f;
-    public float maxMoveSpeed = 100f;
     private float moveSpeed = 2f;
-    public float currentMoveSeed = 0f;
 
     public Sprite car_down;
     public Sprite car_up;
@@ -49,8 +46,6 @@ public class Car : MonoBehaviour
     private int assignedPathIndex = 0;
 
     private float spawnTime;
-
-    private Collider2D myCollider;
 
     public TMPro.TMP_Text fineText;
     private int fineAssigned;
@@ -75,15 +70,26 @@ public class Car : MonoBehaviour
         get { return carState; }
     }
 
-    private void Awake()
+    private bool inited = false;
+
+    void Init()
     {
         car = GetComponentInChildren<SpriteRenderer>();
 
-        myCollider = GetComponent<Collider2D>();
+        inited = true;
     }
 
-    public void ParkedCar(DOTweenPath path, int fineAssigned)
+    private void Awake()
     {
+        if (!inited)
+            Init();
+    }
+
+    public void ParkedCar(DOTweenPath path, int fineAssigned, Color fineColor)
+    {
+        if (!inited)
+            Init();
+
         currentIndex = 0;
 
         carState = eCarState.Parked;
@@ -91,6 +97,9 @@ public class Car : MonoBehaviour
         transform.DOKill();
 
         assignedPath = path;
+
+        car.DOKill();
+        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
 
         gameObject.SetActive(true);
 
@@ -106,27 +115,24 @@ public class Car : MonoBehaviour
         SetOrientation();
     }
 
-    public void StartMoving(DOTweenPath path, int assignedPathIndex, float speed = -1f, int fineAssigned = -1)
+    public void StartMoving(DOTweenPath path, int assignedPathIndex, float speed, int fineAssigned, Color fineColor)
     {
+        if (!inited)
+            Init();
+
         spawnTime = Time.time;
 
         assignedPath = path;
 
-        if(speed == -1)
-        {
-            moveSpeed = UnityEngine.Random.Range(minMoveSpeed, maxMoveSpeed);
-        }
-        else
-        {
-            moveSpeed = speed;
-        }
+        moveSpeed = speed;
+
+        car.DOKill();
+        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
 
         fineText.gameObject.SetActive(fineAssigned != -1);
         
         this.fineAssigned = fineAssigned;
         SetFineText();
-
-        currentMoveSeed = moveSpeed;
 
         this.assignedPathIndex = assignedPathIndex;
 
@@ -142,7 +148,7 @@ public class Car : MonoBehaviour
         SetCar();
 
         transform.DOKill();
-        transform.DOPath(assignedPath.wps.ToArray(), currentMoveSeed).SetSpeedBased(true).SetEase(Ease.Linear)
+        transform.DOPath(assignedPath.wps.ToArray(), moveSpeed).SetSpeedBased(true).SetEase(Ease.Linear)
             .OnStepComplete(FreeCar).OnWaypointChange(WayPointChanged);
     }
 
@@ -161,13 +167,12 @@ public class Car : MonoBehaviour
     void FreeCar()
     {
         transform.DOKill();
+        car.DOKill();
 
         carState = eCarState.None;
         gameObject.SetActive(false);
 
         currentIndex = -1;
-
-        FindShooterManager.CarFreed();
     }
 
     private void SetOrientation()
@@ -233,72 +238,6 @@ public class Car : MonoBehaviour
             moveDir = (nextPos - startPos).normalized;
 
             SetOrientation();
-        }
-    }
-
-    void HitCars(Collider2D[] otherCars)
-    {
-        bool hitOtherCar = false;
-        foreach(Collider2D collider in otherCars)
-        {
-            if (collider == myCollider)
-                continue;
-
-            Car otherCar = collider.GetComponent<Car>();
-
-            float otherCarSpawnTime = otherCar.SpawnTime;
-            eCarState otherCarState = otherCar.carState;
-            float otherCapSpeed = otherCar.currentMoveSeed;
-            int otherCarPath = otherCar.AssignedPathIndex;
-
-            if (otherCarPath != assignedPathIndex)
-            {
-                if(otherCarState == eCarState.Paused)
-                {
-                    carState = otherCarState;
-                    return;
-                }
-                else if (spawnTime < otherCarSpawnTime)
-                {
-                    carState = eCarState.Paused;
-                    hitOtherCar = true;
-                    return;
-                }
-            }
-        }
-
-        if (!hitOtherCar)
-        {
-            if (carState == eCarState.Paused)
-            {
-                currentMoveSeed = moveSpeed;
-                carState = eCarState.Moving;
-            }
-        }
-    }
-
-    public void Update()
-    {
-        if (assignedPath != null)
-        {
-            //if (carState == eCarState.Moving)
-            //{
-            //    currentPos = transform.position + moveDir * currentMoveSeed * Time.deltaTime;
-
-            //    if ((currentPos - nextPos).sqrMagnitude < 0.01f)
-            //    {
-            //        transform.position = nextPos;
-            //        currentIndex += 1;
-            //        SetCar();
-            //    }
-            //    else
-            //    {
-            //        transform.position = currentPos;
-            //    }
-            //}
-
-            //HitCars(Physics2D.OverlapCircleAll(transform.position, 0.4f, 1 << gameObject.layer, 
-            //        PreviewCondition.Both, 0f, Color.red, Color.green));
         }
     }
 
