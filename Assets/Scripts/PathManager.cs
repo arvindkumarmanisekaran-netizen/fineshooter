@@ -3,6 +3,7 @@ using System;
 using Random = UnityEngine.Random;
 using DG.Tweening;
 using System.Collections.Generic;
+using System.Linq;
 
 public class PathManager : MonoBehaviour
 {
@@ -10,27 +11,26 @@ public class PathManager : MonoBehaviour
 
     public List<DOTweenPath> parkingPaths;
 
-    private int previousReturnedPath = -1;
-
-    private int previousReturnedParkingPath = -1;
-
     public Transform routesParent;
+
+    private Queue<int> previousReturnedPathsQueue = new Queue<int>(2);
+    private Queue<int> previousReturnedParkingPathsQueue = new Queue<int>(2);
 
     private void Awake()
     {
         int numPaths = paths.Count;
 
-        for(int i = 0; i < numPaths; i++)
-        {
-            GameObject reversePathObject = new GameObject(paths[i].name + "_Reverse");
-            reversePathObject.transform.parent = routesParent;
+        //for(int i = 0; i < numPaths; i++)
+        //{
+        //    GameObject reversePathObject = new GameObject(paths[i].name + "_Reverse");
+        //    reversePathObject.transform.parent = routesParent;
 
-            DOTweenPath reversePath = reversePathObject.AddComponent<DOTweenPath>();
-            reversePath.wps = new List<Vector3>(paths[i].wps);
-            reversePath.wps.Reverse();
+        //    DOTweenPath reversePath = reversePathObject.AddComponent<DOTweenPath>();
+        //    reversePath.wps = new List<Vector3>(paths[i].wps);
+        //    reversePath.wps.Reverse();
 
-            paths.Add(reversePath);
-        }
+        //    paths.Add(reversePath);
+        //}
 
         numPaths = parkingPaths.Count;
 
@@ -56,10 +56,19 @@ public class PathManager : MonoBehaviour
     {
         int randomPath = Random.Range(0, paths.Count);
 
-        if (randomPath == previousReturnedPath)
+        if (previousReturnedPathsQueue.Contains(randomPath))
             return GetRandomPath(out pathIndex);
 
-        previousReturnedPath = randomPath;
+        if(previousReturnedPathsQueue.Count == 0)
+        {
+            previousReturnedPathsQueue.Enqueue(randomPath);
+            previousReturnedPathsQueue.Enqueue(randomPath);
+        }
+        else 
+        {
+            previousReturnedPathsQueue.Dequeue();
+            previousReturnedPathsQueue.Enqueue(randomPath);
+        }
 
         pathIndex = randomPath;
 
@@ -75,10 +84,19 @@ public class PathManager : MonoBehaviour
     {
         int randomPath = Random.Range(0, parkingPaths.Count);
 
-        if (randomPath == previousReturnedParkingPath)
+        if (previousReturnedParkingPathsQueue.Contains(randomPath))
             return GetRandomParkingPath();
 
-        previousReturnedParkingPath = randomPath;
+        if (previousReturnedParkingPathsQueue.Count == 0)
+        {
+            previousReturnedParkingPathsQueue.Enqueue(randomPath);
+            previousReturnedParkingPathsQueue.Enqueue(randomPath);
+        }
+        else
+        {
+            previousReturnedParkingPathsQueue.Dequeue();
+            previousReturnedParkingPathsQueue.Enqueue(randomPath);
+        }
 
         return GetParkingPath(randomPath);
     }

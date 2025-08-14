@@ -160,6 +160,8 @@ public class Car : MonoBehaviour
 
     void FreeCar()
     {
+        transform.DOKill();
+
         carState = eCarState.None;
         gameObject.SetActive(false);
 

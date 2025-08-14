@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI;
+using DG.Tweening;
 
 public class Bullet : MonoBehaviour
 {
@@ -36,6 +36,9 @@ public class Bullet : MonoBehaviour
 
         this.bulletValue = bulletValue;
 
+        transform.DOKill();
+        transform.DOBlendableMoveBy(moveDir * 15f, moveSpeed).SetSpeedBased(true).SetEase(Ease.OutExpo);
+
         fired = true;
     }
 
@@ -43,9 +46,9 @@ public class Bullet : MonoBehaviour
     {
         if (fired)
         {
-            currentPos = transform.position + moveDir * moveSpeed * Time.deltaTime;
+            //currentPos = transform.position + moveDir * moveSpeed * Time.deltaTime;
 
-            transform.position = currentPos;
+            //transform.position = currentPos;
 
             if( transform.position.x < -limit ||
                 transform.position.x > limit ||
@@ -59,6 +62,7 @@ public class Bullet : MonoBehaviour
 
     public void BulletRest()
     {
+        transform.DOKill();
         gameObject.SetActive(false);
         fired = false;
     }
