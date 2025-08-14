@@ -3,7 +3,7 @@ using DG.Tweening;
 
 public class Tower : MonoBehaviour
 {
-    private SpriteRenderer tower;
+    public SpriteRenderer tower_flash;
 
     [System.Serializable]
     public class WASDMap
@@ -14,33 +14,20 @@ public class Tower : MonoBehaviour
 
     public WASDMap[] wasdMap;
 
-    private Color colorTransparent = new Color(1f, 1f, 1f, 0f);
+    private Color colorTransparent = new Color(1f, 0f, 0f, 0f);
 
-    public Sprite tower_On;
-    public Sprite tower_Off;
-
-    private bool inited = false;    
-
-    void Init()
-    {
-        tower = GetComponent<SpriteRenderer>();
-        inited = true;
-    }
 
     public void SelectTower()
     {
-        if(!inited)
-            Init();
-
-        tower.sprite = tower_On;
+        tower_flash.DOKill();
+        tower_flash.color = colorTransparent;
+        tower_flash.DOFade(0.24f, 0.06f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutExpo);
     }
 
     public void DeselectTower()
     {
-        if (!inited)
-            Init();
-
-        tower.sprite = tower_Off;
+        tower_flash.DOKill();
+        tower_flash.DOFade(0f, 0.2f);
     }
 
     public Tower GetTower(string key)
@@ -52,5 +39,11 @@ public class Tower : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void Fire()
+    {
+        tower_flash.DOKill();
+        tower_flash.DOColor(new Color(1f, 1f, 1f, 0.6f), 0.1f).OnComplete(SelectTower);
     }
 }

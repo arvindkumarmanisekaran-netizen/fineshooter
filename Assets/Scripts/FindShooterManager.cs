@@ -11,6 +11,7 @@ using System.Collections;
 public enum eGameState
 {
     MainMenu,
+    AutoToggle,
     Playing,
     GameOver
 }
@@ -64,6 +65,11 @@ public class FindShooterManager : MonoBehaviour
     public Sprite mainMenuOn;
     public Sprite mainMenuOff;
 
+    public AudioSource bgm;
+    public AudioSource trafficAmbience;
+
+    public SpriteRenderer towerOn;
+
     public class VoilationCarMap
     {
         public Car car;
@@ -93,9 +99,8 @@ public class FindShooterManager : MonoBehaviour
     public Image gibberishImage;
 
     public LaserModeOnOff laserModeOnOff;
-    private bool laserAutoOn = false;
+    private bool laserAutoOn = true;
     private bool inGameCursor = true;
-
 
     public void Awake()
     {
@@ -107,7 +112,22 @@ public class FindShooterManager : MonoBehaviour
         Random.InitState(seed);
         
         gameState = eGameState.MainMenu;
-        StartCoroutine(MenuMenuAnimation());
+        StartCoroutine("MenuMenuAnimation");
+
+        PlayBGM();
+    }
+
+    void PlayBGM()
+    {
+        bgm.DOKill();
+        bgm.volume = 0f;
+
+        float bgmVolume = gameState == eGameState.MainMenu ? 0.5f : 0.05f;
+
+        bgm.DOFade(bgmVolume, 3f).SetEase(Ease.InOutQuad);
+        bgm.DOFade(0f, 3f).SetEase(Ease.InOutQuad).SetDelay(bgm.clip.length - 5f);
+        bgm.Play();
+        Invoke("PlayBGM", bgm.clip.length + 2f);
     }
 
     IEnumerator MenuMenuAnimation()
@@ -123,22 +143,40 @@ public class FindShooterManager : MonoBehaviour
 
     public void BeginClicked()
     {
-        gameState = eGameState.Playing;
+        gameState = eGameState.AutoToggle;
 
-        StartCoroutine (MenuMenuAnimation());
+        bgm.DOKill();
+        bgm.DOFade(0.05f, 0.3f).SetEase(Ease.InOutQuad);
+
+        trafficAmbience.Play();
+
+        laserModeOnOff.Setup(OnLaserModeOnOffToggleClicked, laserAutoOn);
+
+        rayFromTower.gameObject.SetActive(false);
+
+        StopCoroutine ("MenuMenuAnimation");
+
+        StartCoroutine("TowerOnOff");
 
         mainMenu.gameObject.SetActive(false);
-
-        StartPlaying();
     }
-    
+
+    IEnumerator TowerOnOff()
+    {
+        while (true)
+        {
+            towerOn.gameObject.SetActive(!towerOn.gameObject.activeSelf);
+
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
     public void StartPlaying()
     {
         fineSelector.GetComponent<RectTransform>().anchoredPosition = selectorStart;
 
-        Cursor.SetCursor(cursorTexture, cursorOffset, CursorMode.ForceSoftware);
-
-        laserModeOnOff.Setup(OnLaserModeOnOffToggleClicked, laserAutoOn);
+        //Cursor.SetCursor(cursorTexture, cursorOffset, CursorMode.ForceSoftware);
+        Cursor.visible = false;
 
         StaticAnimations();
 
@@ -150,7 +188,6 @@ public class FindShooterManager : MonoBehaviour
         SetCurrentLevel();
 
         ToggleiPAD();
-
     }
 
     void OnLaserModeOnOffToggleClicked()
@@ -158,6 +195,17 @@ public class FindShooterManager : MonoBehaviour
         this.laserAutoOn = !laserAutoOn;
 
         this.laserModeOnOff.SetSprite(this.laserAutoOn);
+
+        if (!laserAutoOn)
+        {
+            gameState = eGameState.Playing;
+
+            StopCoroutine("TowerOnOff");
+
+            towerOn.gameObject.SetActive(false);
+
+            StartPlaying();
+        }
     }
 
     void ToggleiPAD()
@@ -229,6 +277,7 @@ public class FindShooterManager : MonoBehaviour
         if (bullet != null)
         {
             bullet.Fire(currentSelectedTower.transform.position, currentFine);
+            currentSelectedTower.Fire();
         }
     }
 
@@ -339,6 +388,15 @@ public class FindShooterManager : MonoBehaviour
         rayFromTower.SetPosition(0, currentSelectedTower.transform.position);
         Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         pos.z = 0f;
+
+        float currentLength = (pos - currentSelectedTower.transform.position).magnitude;
+
+        if(currentLength > 1f)
+        {
+            pos = currentSelectedTower.transform.position +
+                          (pos - currentSelectedTower.transform.position).normalized * 1f;
+        }
+
         rayFromTower.SetPosition(1, pos);
     }
 
@@ -382,8 +440,9 @@ public class FindShooterManager : MonoBehaviour
             return;
         }
 
-        if ( gameState == eGameState.MainMenu || 
-            gameState == eGameState.GameOver)
+        if ( gameState == eGameState.MainMenu ||
+            gameState == eGameState.AutoToggle ||
+            gameState == eGameState.GameOver )
         {
             return;
         }
@@ -394,7 +453,8 @@ public class FindShooterManager : MonoBehaviour
         {
             if (viewPointPosition.x < 0.16f || viewPointPosition.x > 0.85f)
             {
-                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                Cursor.visible = true;
+                //Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                 rayFromTower.gameObject.SetActive(false);
                 inGameCursor = false;
             }
@@ -403,7 +463,8 @@ public class FindShooterManager : MonoBehaviour
         {
             if (viewPointPosition.x > 0.16f && viewPointPosition.x < 0.85f)
             {
-                Cursor.SetCursor(cursorTexture, cursorOffset, CursorMode.ForceSoftware);
+                Cursor.visible = false;
+                //Cursor.SetCursor(cursorTexture, cursorOffset, CursorMode.ForceSoftware);
                 rayFromTower.gameObject.SetActive(true);
                 inGameCursor = true;
             }
