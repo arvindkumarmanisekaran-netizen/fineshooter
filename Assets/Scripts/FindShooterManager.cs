@@ -7,8 +7,18 @@ using System.Collections.Generic;
 using Image = UnityEngine.UI.Image;
 using System.Collections;
 
+[System.Serializable]
+public enum eGameState
+{
+    MainMenu,
+    Playing,
+    GameOver
+}
+
 public class FindShooterManager : MonoBehaviour
 {
+    public eGameState gameState = eGameState.MainMenu;
+
     public int currentLevel = 1;
 
     private PathManager pathManager;
@@ -50,6 +60,10 @@ public class FindShooterManager : MonoBehaviour
     private Vector2 selectorStart = new Vector2(-70f, 66f);
     private Vector2 selectorMoveOffset = new Vector2(70f, -58f);
 
+    public Image mainMenu;
+    public Sprite mainMenuOn;
+    public Sprite mainMenuOff;
+
     public class VoilationCarMap
     {
         public Car car;
@@ -62,9 +76,8 @@ public class FindShooterManager : MonoBehaviour
         }
     }
 
-    private List<VoilationCarMap> spawnedCars = new List<VoilationCarMap> ();
+    private List<VoilationCarMap> spawnedCars = new List<VoilationCarMap>();
     private bool spawningLevel = false;
-    private bool gameOver = false;
 
     private bool smalliPadShown = false;
     public Image smalliPad;
@@ -79,6 +92,11 @@ public class FindShooterManager : MonoBehaviour
     public Sprite[] gibberishSprites;
     public Image gibberishImage;
 
+    public LaserModeOnOff laserModeOnOff;
+    private bool laserAutoOn = false;
+    private bool inGameCursor = true;
+
+
     public void Awake()
     {
         int seed = DateTime.Now.Millisecond;
@@ -87,10 +105,40 @@ public class FindShooterManager : MonoBehaviour
         levelManager = GetComponentInChildren<LevelManager>();
 
         Random.InitState(seed);
+        
+        gameState = eGameState.MainMenu;
+        StartCoroutine(MenuMenuAnimation());
+    }
 
+    IEnumerator MenuMenuAnimation()
+    {
+        bool isMainMenuOffState = true;
+        while (true)
+        {
+            mainMenu.sprite = isMainMenuOffState ? mainMenuOff : mainMenuOn;
+            yield return new WaitForSeconds(1f);
+            isMainMenuOffState = !isMainMenuOffState;
+        }
+    }
+
+    public void BeginClicked()
+    {
+        gameState = eGameState.Playing;
+
+        StartCoroutine (MenuMenuAnimation());
+
+        mainMenu.gameObject.SetActive(false);
+
+        StartPlaying();
+    }
+    
+    public void StartPlaying()
+    {
         fineSelector.GetComponent<RectTransform>().anchoredPosition = selectorStart;
 
         Cursor.SetCursor(cursorTexture, cursorOffset, CursorMode.ForceSoftware);
+
+        laserModeOnOff.Setup(OnLaserModeOnOffToggleClicked, laserAutoOn);
 
         StaticAnimations();
 
@@ -102,6 +150,14 @@ public class FindShooterManager : MonoBehaviour
         SetCurrentLevel();
 
         ToggleiPAD();
+
+    }
+
+    void OnLaserModeOnOffToggleClicked()
+    {
+        this.laserAutoOn = !laserAutoOn;
+
+        this.laserModeOnOff.SetSprite(this.laserAutoOn);
     }
 
     void ToggleiPAD()
@@ -116,15 +172,15 @@ public class FindShooterManager : MonoBehaviour
     {
         print("Level Complete: " + currentLevel);
 
-        currentLevel += 1;  
+        currentLevel += 1;
 
-        if(currentLevel <= levelManager.levels.Length)
+        if (currentLevel <= levelManager.levels.Length)
         {
             SetCurrentLevel();
         }
         else
         {
-            gameOver = true;
+            gameState = eGameState.GameOver;
         }
     }
 
@@ -144,7 +200,7 @@ public class FindShooterManager : MonoBehaviour
     {
         foreach (Bullet bullet in bullets)
         {
-            if(!bullet.Fired)
+            if (!bullet.Fired)
             {
                 return bullet;
             }
@@ -152,7 +208,7 @@ public class FindShooterManager : MonoBehaviour
 
         return null;
     }
-    
+
     Car GetRandomCar()
     {
         for (int i = 0; i < numTries; i++)
@@ -290,11 +346,11 @@ public class FindShooterManager : MonoBehaviour
     {
         foreach (VoilationCarMap voilationCarMap in spawnedCars)
         {
-            if(voilationCarMap.car.gameObject.GetInstanceID() == car.gameObject.GetInstanceID())
+            if (voilationCarMap.car.gameObject.GetInstanceID() == car.gameObject.GetInstanceID())
             {
                 GameObject spawnedCardInstance = voilationCarMap.voilationCard;
 
-                if(spawnedCardInstance != null)
+                if (spawnedCardInstance != null)
                 {
                     GameObject.Destroy(spawnedCardInstance);
 
@@ -306,9 +362,9 @@ public class FindShooterManager : MonoBehaviour
 
     void ManageLevel()
     {
-        foreach(VoilationCarMap voilationCarMap in spawnedCars)
+        foreach (VoilationCarMap voilationCarMap in spawnedCars)
         {
-            if(!voilationCarMap.car.isFree)
+            if (!voilationCarMap.car.isFree)
             {
                 return;
             }
@@ -317,14 +373,51 @@ public class FindShooterManager : MonoBehaviour
         LevelComplete();
     }
 
+
     public void Update()
     {
-        if (!spawningLevel && !gameOver)
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+            return;
+        }
+
+        if ( gameState == eGameState.MainMenu || 
+            gameState == eGameState.GameOver)
+        {
+            return;
+        }
+
+        Vector3 viewPointPosition = (Camera.main.ScreenToViewportPoint(Input.mousePosition));
+
+        if (inGameCursor)
+        {
+            if (viewPointPosition.x < 0.16f || viewPointPosition.x > 0.85f)
+            {
+                Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                rayFromTower.gameObject.SetActive(false);
+                inGameCursor = false;
+            }
+        }
+        else 
+        {
+            if (viewPointPosition.x > 0.16f && viewPointPosition.x < 0.85f)
+            {
+                Cursor.SetCursor(cursorTexture, cursorOffset, CursorMode.ForceSoftware);
+                rayFromTower.gameObject.SetActive(true);
+                inGameCursor = true;
+            }
+        }
+
+        if (!spawningLevel)
         {
             ManageLevel();
         }
 
-        DrawRayFromTower();
+        if (inGameCursor)
+        {
+            DrawRayFromTower();
+        }
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
