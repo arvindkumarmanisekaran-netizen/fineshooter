@@ -2722,14 +2722,14 @@ MonoBehaviour:
     fine: 2000
   - voilation: 8
     fine: 800
-  - voilation: 8
-    fine: 800
+  - voilation: 9
+    fine: 400
   levels:
   - voilations: 04000000
   - voilations: 0300000004000000
   - voilations: 020000000300000005000000
   - voilations: 000000000500000003000000
-  - voilations: 00000000010000000400000002000000
+  - voilations: 00000000010000000800000002000000
   - voilations: 01000000080000000900000002000000
 --- !u!1 &790498238
 GameObject:
