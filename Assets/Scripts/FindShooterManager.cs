@@ -287,6 +287,26 @@ public class FindShooterManager : MonoBehaviour
                     currentFine = 500;
                     break;
 
+                case "6":
+                    currentFine = 600;
+                    break;
+
+                case "7":
+                    currentFine = 700;
+                    break;
+
+                case "8":
+                    currentFine = 800;
+                    break;
+
+                case "9":
+                    currentFine = 900;
+                    break;
+
+                case "0":
+                    currentFine = 1000;
+                    break;
+
                 default:
                     Tower newTower = currentSelectedTower.GetTower(inputString);
                     if (newTower != null)
