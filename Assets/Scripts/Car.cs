@@ -25,7 +25,7 @@ public class Car : MonoBehaviour
 
     public eCarState carState = eCarState.None;
 
-    private DOTweenPath assignedPath;
+    public DOTweenPath assignedPath;
 
     private SpriteRenderer car;
 
@@ -88,7 +88,16 @@ public class Car : MonoBehaviour
 
         carState = eCarState.Parked;
 
+        transform.DOKill();
+
+        assignedPath = path;
+
         gameObject.SetActive(true);
+
+        fineText.gameObject.SetActive(fineAssigned != -1);
+
+        this.fineAssigned = fineAssigned;
+        SetFineText();
 
         transform.position = path.wps[0];
 
@@ -131,6 +140,17 @@ public class Car : MonoBehaviour
         transform.position = currentPos;
 
         SetCar();
+
+        transform.DOKill();
+        transform.DOPath(assignedPath.wps.ToArray(), currentMoveSeed).SetSpeedBased(true).SetEase(Ease.Linear)
+            .OnStepComplete(FreeCar).OnWaypointChange(WayPointChanged);
+    }
+
+    void WayPointChanged(int index)
+    {
+        moveDir = (assignedPath.wps[index + 1] - assignedPath.wps[index]).normalized;
+
+        SetOrientation();
     }
 
     void SetFineText()
@@ -259,21 +279,21 @@ public class Car : MonoBehaviour
     {
         if (assignedPath != null)
         {
-            if (carState == eCarState.Moving)
-            {
-                currentPos = transform.position + moveDir * currentMoveSeed * Time.deltaTime;
+            //if (carState == eCarState.Moving)
+            //{
+            //    currentPos = transform.position + moveDir * currentMoveSeed * Time.deltaTime;
 
-                if ((currentPos - nextPos).sqrMagnitude < 0.01f)
-                {
-                    transform.position = nextPos;
-                    currentIndex += 1;
-                    SetCar();
-                }
-                else
-                {
-                    transform.position = currentPos;
-                }
-            }
+            //    if ((currentPos - nextPos).sqrMagnitude < 0.01f)
+            //    {
+            //        transform.position = nextPos;
+            //        currentIndex += 1;
+            //        SetCar();
+            //    }
+            //    else
+            //    {
+            //        transform.position = currentPos;
+            //    }
+            //}
 
             //HitCars(Physics2D.OverlapCircleAll(transform.position, 0.4f, 1 << gameObject.layer, 
             //        PreviewCondition.Both, 0f, Color.red, Color.green));
