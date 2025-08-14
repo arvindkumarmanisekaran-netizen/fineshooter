@@ -1,6 +1,8 @@
 using UnityEngine;
 using System;
 using DG.Tweening;
+using Physics2D = RotaryHeart.Lib.PhysicsExtension.Physics2D;
+using RotaryHeart.Lib.PhysicsExtension;
 
 public class Car : MonoBehaviour
 {
@@ -47,6 +49,11 @@ public class Car : MonoBehaviour
 
     private float spawnTime;
 
+    private Collider2D myCollider;
+
+    public TMPro.TMP_Text fineText;
+    private int fineAssigned;
+
     public float SpawnTime
     {
         get { return spawnTime; }
@@ -69,16 +76,31 @@ public class Car : MonoBehaviour
 
     private void Awake()
     {
-        car = GetComponent<SpriteRenderer>();
+        car = GetComponentInChildren<SpriteRenderer>();
+
+        myCollider = GetComponent<Collider2D>();
     }
 
-    public void StartMoving(DOTweenPath path, int assignedPathIndex)
+    public void StartMoving(DOTweenPath path, int assignedPathIndex, float speed = -1f, int fineAssigned = -1)
     {
         spawnTime = Time.time;
 
         assignedPath = path;
 
-        moveSpeed = UnityEngine.Random.Range(minMoveSpeed, maxMoveSpeed);
+        if(speed == -1)
+        {
+            moveSpeed = UnityEngine.Random.Range(minMoveSpeed, maxMoveSpeed);
+        }
+        else
+        {
+            moveSpeed = speed;
+        }
+
+        fineText.gameObject.SetActive(fineAssigned != -1);
+        
+        this.fineAssigned = fineAssigned;
+        SetFineText();
+
         currentMoveSeed = moveSpeed;
 
         this.assignedPathIndex = assignedPathIndex;
@@ -93,6 +115,11 @@ public class Car : MonoBehaviour
         transform.position = currentPos;
 
         SetCar();
+    }
+
+    void SetFineText()
+    {
+        fineText.text = "" + fineAssigned;
     }
 
     void FreeCar()
@@ -138,7 +165,7 @@ public class Car : MonoBehaviour
                 carOrientation = eCarOrientation.Left;
             }
 
-            Vector2 scale = transform.localScale;
+            Vector2 scale = car.transform.localScale;
 
             Vector2 currentOrientation = orientations[(int)carOrientation];
 
@@ -161,8 +188,49 @@ public class Car : MonoBehaviour
                     break;
             }
 
-            transform.localScale = new Vector2(currentOrientation.x * Mathf.Abs(scale.x),
+            car.transform.localScale = new Vector2(currentOrientation.x * Mathf.Abs(scale.x),
                                                         currentOrientation.y * Mathf.Abs(scale.y));
+        }
+    }
+
+    void HitCars(Collider2D[] otherCars)
+    {
+        bool hitOtherCar = false;
+        foreach(Collider2D collider in otherCars)
+        {
+            if (collider == myCollider)
+                continue;
+
+            Car otherCar = collider.GetComponent<Car>();
+
+            float otherCarSpawnTime = otherCar.SpawnTime;
+            eCarState otherCarState = otherCar.carState;
+            float otherCapSpeed = otherCar.currentMoveSeed;
+            int otherCarPath = otherCar.AssignedPathIndex;
+
+            if (otherCarPath != assignedPathIndex)
+            {
+                if(otherCarState == eCarState.Paused)
+                {
+                    carState = otherCarState;
+                    return;
+                }
+                else if (spawnTime < otherCarSpawnTime)
+                {
+                    carState = eCarState.Paused;
+                    hitOtherCar = true;
+                    return;
+                }
+            }
+        }
+
+        if (!hitOtherCar)
+        {
+            if (carState == eCarState.Paused)
+            {
+                currentMoveSeed = moveSpeed;
+                carState = eCarState.Moving;
+            }
         }
     }
 
@@ -174,7 +242,7 @@ public class Car : MonoBehaviour
             {
                 currentPos = transform.position + moveDir * currentMoveSeed * Time.deltaTime;
 
-                if ((currentPos - nextPos).sqrMagnitude < 0.1f)
+                if ((currentPos - nextPos).sqrMagnitude < 0.01f)
                 {
                     transform.position = nextPos;
                     currentIndex += 1;
@@ -185,6 +253,23 @@ public class Car : MonoBehaviour
                     transform.position = currentPos;
                 }
             }
+
+            //HitCars(Physics2D.OverlapCircleAll(transform.position, 0.4f, 1 << gameObject.layer, 
+            //        PreviewCondition.Both, 0f, Color.red, Color.green));
+        }
+    }
+
+    internal void BulletHit(int bulletValue)
+    {
+        fineAssigned -= bulletValue;
+
+        if(fineAssigned <= 0 )
+        {
+            FreeCar();
+        }
+        else
+        {
+            SetFineText();
         }
     }
 }

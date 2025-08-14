@@ -2,6 +2,10 @@ using System;
 using UnityEngine;
 using DG.Tweening;
 using Random = UnityEngine.Random;
+using TMPro;
+using PlasticGui.WorkspaceWindow.QueryViews;
+using NUnit.Framework;
+using System.Collections.Generic;
 
 public class FindShooterManager : MonoBehaviour
 {
@@ -39,6 +43,17 @@ public class FindShooterManager : MonoBehaviour
     public float bk_glow_duration;
     public float bk_glow_fade_amount;
 
+    public TMP_InputField fineField;
+
+    private int currentFine = 100;
+
+    public int currentLevel = 1;
+
+    public LevelManager levelManager;
+
+    private List<Car> spawnedCars = new List<Car>();
+
+
     public void Awake()
     {
         int seed = DateTime.Now.Millisecond;
@@ -51,6 +66,28 @@ public class FindShooterManager : MonoBehaviour
 
         currentSelectedTower = towers[0];
         currentSelectedTower.SelectTower();
+
+        SetCurrentFine();
+
+        SetCurrentLevel();
+
+
+    }
+
+    private void OnEnable()
+    {
+        LevelManager.OnLevelComplete += LevelComplete;
+    }
+
+    private void OnDisable()
+    {
+        LevelManager.OnLevelComplete -= LevelComplete;
+    }
+
+
+    private void LevelComplete()
+    {
+        
     }
 
     void StaticAnimations()
@@ -124,7 +161,48 @@ public class FindShooterManager : MonoBehaviour
 
         if (bullet != null)
         {
-            bullet.Fire(currentSelectedTower.transform.position);
+            bullet.Fire(currentSelectedTower.transform.position, currentFine);
+        }
+    }
+
+    void SetCurrentFine()
+    {
+        fineField.text = "" + currentFine;
+    }
+
+    void SetCurrentLevel()
+    {
+        Level level = levelManager.levels[currentLevel - 1];
+        spawnedCars = new List<Car> { GetRandomCar() };
+        int pathIndex = 0;
+        Car car = null;
+        DOTweenPath path = null;
+
+        spawnedCars.Clear();
+        foreach (eVoilation voilation in level.voilations)
+        {
+            switch (voilation)
+            {
+                case eVoilation.SPEEDING_BETWEEN_20_30:
+                    car = GetRandomCar();
+                    path = pathManager.GetRandomPath(out pathIndex);
+                    car.StartMoving(path, pathIndex, 0.2f, levelManager.GetFine(voilation));
+                    break;
+
+                case eVoilation.SPEEDING_BETWEEN_50_60:
+                    car = GetRandomCar();
+                    path = pathManager.GetRandomPath(out pathIndex);
+                    car.StartMoving(path, pathIndex, 0.4f, levelManager.GetFine(voilation));
+                    break;
+
+                case eVoilation.SPEEDING_GREATER_60:
+                    car = GetRandomCar();
+                    path = pathManager.GetRandomPath(out pathIndex);
+                    car.StartMoving(path, pathIndex, 0.6f, levelManager.GetFine(voilation));
+                    break;
+            }
+            
+            spawnedCars.Add(car);
         }
     }
 
@@ -143,6 +221,26 @@ public class FindShooterManager : MonoBehaviour
                 case "":
                     break;
 
+                case "1":
+                    currentFine = 100;
+                    break;
+
+                case "2":
+                    currentFine = 200;
+                    break;
+
+                case "3":
+                    currentFine = 300;
+                    break;
+
+                case "4":
+                    currentFine = 400;
+                    break;
+
+                case "5":
+                    currentFine = 500;
+                    break;
+
                 default:
                     Tower newTower = currentSelectedTower.GetTower(inputString);
                     if (newTower != null)
@@ -153,14 +251,16 @@ public class FindShooterManager : MonoBehaviour
                     }
                     break;
             }
+
+            SetCurrentFine();
         }
 
-        if(spawnTimer <= 0f && numCarsMoving < maxCarsMoving)
-        {
-            SpawnCar();
-            spawnTimer = spawnDelay;
-        }
+        //if(spawnTimer <= 0f && numCarsMoving < maxCarsMoving)
+        //{
+        //    SpawnCar();
+        //    spawnTimer = spawnDelay;
+        //}
 
-        spawnTimer -= Time.deltaTime;
+        //spawnTimer -= Time.deltaTime;
     }
 }

@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.08, y: 0.08, z: 0.08}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 4
-  m_Sprite: {fileID: 1302413230, guid: 590bc166ad444004e99fb29e4abc446c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9f33bc89ae7ac83489c5b5cdce79ab6f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -103,17 +103,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   carState: 0
-  minMoveSpeed: 0.5
-  maxMoveSpeed: 0.8
+  minMoveSpeed: 0.2
+  maxMoveSpeed: 0.6
   currentMoveSeed: 0
-  car_down: {fileID: 1302413230, guid: 590bc166ad444004e99fb29e4abc446c, type: 3}
-  car_up: {fileID: 1964479107, guid: 590bc166ad444004e99fb29e4abc446c, type: 3}
+  car_down: {fileID: 21300000, guid: 9f33bc89ae7ac83489c5b5cdce79ab6f, type: 3}
+  car_up: {fileID: 21300000, guid: 94865022a0252fd47b24578eab86c380, type: 3}
   carOrientation: 0
   orientations:
   - {x: -1, y: 1}
   - {x: -1, y: 1}
   - {x: 1, y: 1}
   - {x: 1, y: 1}
+  fineText: {fileID: 0}
 --- !u!61 &8797867461410075932
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -152,13 +153,13 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 5.44, y: 4.26}
+    oldSize: {x: 0.68, y: 0.47}
     newSize: {x: 5.44, y: 4.26}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 5.44, y: 4.26}
+  m_Size: {x: 0.68, y: 0.47}
   m_EdgeRadius: 0
 --- !u!50 &7098059294171288665
 Rigidbody2D:

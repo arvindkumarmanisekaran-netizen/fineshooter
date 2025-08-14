@@ -13,6 +13,8 @@ public class Bullet : MonoBehaviour
 
     private float limit = 6f;
 
+    private int bulletValue = 0;
+
     public bool Fired
     {
         get { return fired; }
@@ -20,7 +22,7 @@ public class Bullet : MonoBehaviour
 
     private Vector3 offset = new Vector3(-0.5f, -0.5f, 0f);
 
-    public void Fire(Vector3 towerPosition)
+    public void Fire(Vector3 towerPosition, int bulletValue)
     {
         Vector3 pos1 = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         pos1.z = 0f;
@@ -31,6 +33,8 @@ public class Bullet : MonoBehaviour
 
         float angle = Vector2.SignedAngle(Vector2.up, moveDir);
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        this.bulletValue = bulletValue;
 
         fired = true;
     }
@@ -61,6 +65,12 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
+        if(collider.gameObject.layer == LayerMask.NameToLayer("Car"))
+        {
+            Car car = collider.gameObject.GetComponent<Car>();
+            car.BulletHit(bulletValue);
+        }
+
         BulletRest();
     }
 }
