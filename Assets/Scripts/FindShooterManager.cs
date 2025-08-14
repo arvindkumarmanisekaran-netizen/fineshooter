@@ -4,10 +4,17 @@ using DG.Tweening;
 using Random = UnityEngine.Random;
 using TMPro;
 using System.Collections.Generic;
+using Image = UnityEngine.UI.Image;
+using System.Collections;
+using log4net.Core;
+using System.Runtime.ConstrainedExecution;
 
 public class FindShooterManager : MonoBehaviour
 {
-    public PathManager pathManager;
+    public int currentLevel = 1;
+
+    private PathManager pathManager;
+    private LevelManager levelManager;
 
     public Car[] cars;
 
@@ -33,23 +40,43 @@ public class FindShooterManager : MonoBehaviour
     public float bk_glow_duration;
     public float bk_glow_fade_amount;
 
-    public TMP_InputField fineField;
-
     private int currentFine = 100;
 
-    public int currentLevel = 1;
-
-    public LevelManager levelManager;
-
-    private List<Car> spawnedCars = new List<Car>();
-
     public LineRenderer rayFromTower;
+
+    public Texture2D cursorTexture;
+    private Vector2 cursorOffset = new Vector2(16f, 16f);
+
+    public TMP_Text fineText;
+    public Image fineSelector;
+    private Vector2 selectorStart = new Vector2(-70f, 66f);
+    private Vector2 selectorMoveOffset = new Vector2(70f, -58f);
+
+    private List<Car> spawnedCars = new List<Car> ();
+    private bool spawningLevel = false;
+    private bool gameOver = false;
+
+    private bool smalliPadShown = false;
+    public Image smalliPad;
+    public Image bigiPad;
+
+    public Image crackle;
+
+
+    private eVoilation[] currentLevelVoilations;
 
     public void Awake()
     {
         int seed = DateTime.Now.Millisecond;
 
+        pathManager = GetComponentInChildren<PathManager>();
+        levelManager = GetComponentInChildren<LevelManager>();
+
         Random.InitState(seed);
+
+        fineSelector.GetComponent<RectTransform>().anchoredPosition = selectorStart;
+
+        Cursor.SetCursor(cursorTexture, cursorOffset, CursorMode.ForceSoftware);
 
         StaticAnimations();
 
@@ -59,16 +86,16 @@ public class FindShooterManager : MonoBehaviour
         SetCurrentFine();
 
         SetCurrentLevel();
+
+        ToggleiPAD();
     }
 
-    private void OnEnable()
+    void ToggleiPAD()
     {
-        LevelManager.OnLevelComplete += LevelComplete;
-    }
+        smalliPadShown = !smalliPadShown;
 
-    private void OnDisable()
-    {
-        LevelManager.OnLevelComplete -= LevelComplete;
+        smalliPad.gameObject.SetActive(smalliPadShown);
+        bigiPad.gameObject.SetActive(!smalliPadShown);
     }
 
     private void LevelComplete()
@@ -81,11 +108,14 @@ public class FindShooterManager : MonoBehaviour
         {
             SetCurrentLevel();
         }
+        else
+        {
+            gameOver = true;
+        }
     }
 
     void StaticAnimations()
     {
-
         bk_glow.DOKill();
         bk_glow.DOFade(bk_glow_fade_amount, bk_glow_duration).SetEase(bk_glow_ease);
 
@@ -134,19 +164,17 @@ public class FindShooterManager : MonoBehaviour
 
     void SetCurrentFine()
     {
-        fineField.text = "" + currentFine;
+        fineText.text = "" + currentFine;
     }
 
-    void SetCurrentLevel()
+    IEnumerator SpawnVoilations()
     {
-        Level level = levelManager.levels[currentLevel - 1];
-        spawnedCars = new List<Car> { GetRandomCar() };
         int pathIndex = 0;
         Car car = null;
         DOTweenPath path = null;
+        spawningLevel = true;
 
-        spawnedCars.Clear();
-        foreach (eVoilation voilation in level.voilations)
+        foreach (eVoilation voilation in currentLevelVoilations)
         {
             switch (voilation)
             {
@@ -204,11 +232,26 @@ public class FindShooterManager : MonoBehaviour
                     car.ParkedCar(path, levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
                     break;
             }
-            
+
             spawnedCars.Add(car);
+
+            crackle.transform.DOKill();
+            crackle.transform.DOBlendableScaleBy(new Vector3(0f, -0.5f, 0f), 0.1f).SetEase(Ease.OutBounce)
+                .SetLoops(4, LoopType.Yoyo);
+
+            yield return new WaitForSeconds(1f);
         }
 
-        levelManager.ManageLevel(spawnedCars);
+        spawningLevel = false;
+    }
+
+    void SetCurrentLevel()
+    {
+        Level level = levelManager.levels[currentLevel - 1];
+        currentLevelVoilations = level.voilations;
+        spawnedCars.Clear();
+
+        StartCoroutine(SpawnVoilations());
     }
 
     void DrawRayFromTower()
@@ -219,8 +262,26 @@ public class FindShooterManager : MonoBehaviour
         rayFromTower.SetPosition(1, pos);
     }
 
+    void ManageLevel()
+    {
+        foreach(Car car in spawnedCars)
+        {
+            if(!car.isFree)
+            {
+                return;
+            }
+        }
+
+        LevelComplete();
+    }
+
     public void Update()
     {
+        if (!spawningLevel && !gameOver)
+        {
+            ManageLevel();
+        }
+
         DrawRayFromTower();
 
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -229,68 +290,58 @@ public class FindShooterManager : MonoBehaviour
             return;
         }
 
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            ToggleiPAD();
+        }
+
         if (Input.anyKeyDown)
         {
             string inputString = Input.inputString.ToLower();
 
-            switch(inputString)
+            int value;
+            if(int.TryParse(inputString, out value))
             {
-                case " ":
-                    Fire();
-                    break;
+                currentFine = value * 100;
+                currentFine = currentFine == 0 ? 1000 : currentFine;
 
-                case "":
-                    break;
+                int x = 1;
+                int y = 3;
+                if (value > 0)
+                {
+                    x = (value - 1) % 3;
+                    y = (value - 1) / 3;
+                }
 
-                case "1":
-                    currentFine = 100;
-                    break;
+                Vector2 moveOffset = selectorMoveOffset;
+                moveOffset.x *= x;
+                moveOffset.y *= y;
 
-                case "2":
-                    currentFine = 200;
-                    break;
+                Vector2 currentPos = selectorStart + moveOffset;
 
-                case "3":
-                    currentFine = 300;
-                    break;
+                fineSelector.GetComponent<RectTransform>().anchoredPosition = currentPos;
+            }
+            else
+            {
+                switch (inputString)
+                {
+                    case " ":
+                        Fire();
+                        break;
 
-                case "4":
-                    currentFine = 400;
-                    break;
+                    case "":
+                        break;
 
-                case "5":
-                    currentFine = 500;
-                    break;
-
-                case "6":
-                    currentFine = 600;
-                    break;
-
-                case "7":
-                    currentFine = 700;
-                    break;
-
-                case "8":
-                    currentFine = 800;
-                    break;
-
-                case "9":
-                    currentFine = 900;
-                    break;
-
-                case "0":
-                    currentFine = 1000;
-                    break;
-
-                default:
-                    Tower newTower = currentSelectedTower.GetTower(inputString);
-                    if (newTower != null)
-                    {
-                        currentSelectedTower.DeselectTower();
-                        currentSelectedTower = newTower;
-                        currentSelectedTower.SelectTower();
-                    }
-                    break;
+                    default:
+                        Tower newTower = currentSelectedTower.GetTower(inputString);
+                        if (newTower != null)
+                        {
+                            currentSelectedTower.DeselectTower();
+                            currentSelectedTower = newTower;
+                            currentSelectedTower.SelectTower();
+                        }
+                        break;
+                }
             }
 
             SetCurrentFine();

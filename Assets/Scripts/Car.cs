@@ -1,8 +1,6 @@
 using UnityEngine;
 using System;
 using DG.Tweening;
-using Physics2D = RotaryHeart.Lib.PhysicsExtension.Physics2D;
-using RotaryHeart.Lib.PhysicsExtension;
 
 public class Car : MonoBehaviour
 {
