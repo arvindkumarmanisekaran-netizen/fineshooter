@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using DG.Tweening;
+using UnityEngine.Events;
 
 public class Car : MonoBehaviour
 {
@@ -70,6 +71,8 @@ public class Car : MonoBehaviour
 
     private bool inited = false;
 
+    private Action<Car> carFreedFunction = null;
+
     void Init()
     {
         car = GetComponentInChildren<SpriteRenderer>();
@@ -83,7 +86,7 @@ public class Car : MonoBehaviour
             Init();
     }
 
-    public void ParkedCar(DOTweenPath path, int fineAssigned, Color fineColor)
+    public void ParkedCar(DOTweenPath path, int fineAssigned, Color fineColor, Action<Car> carFreedFunction)
     {
         if (!inited)
             Init();
@@ -91,6 +94,8 @@ public class Car : MonoBehaviour
         currentIndex = 0;
 
         carState = eCarState.Parked;
+
+        this.carFreedFunction = carFreedFunction;
 
         transform.DOKill();
 
@@ -113,7 +118,7 @@ public class Car : MonoBehaviour
         SetOrientation();
     }
 
-    public void StartMoving(DOTweenPath path, int assignedPathIndex, float speed, int fineAssigned, Color fineColor)
+    public void StartMoving(DOTweenPath path, int assignedPathIndex, float speed, int fineAssigned, Color fineColor, Action<Car> carFreedFunction)
     {
         if (!inited)
             Init();
@@ -123,6 +128,8 @@ public class Car : MonoBehaviour
         assignedPath = path;
 
         moveSpeed = speed;
+
+        this.carFreedFunction = carFreedFunction;
 
         car.DOKill();
         car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
@@ -171,6 +178,13 @@ public class Car : MonoBehaviour
         gameObject.SetActive(false);
 
         currentIndex = -1;
+
+        if (carFreedFunction != null)
+        {
+            carFreedFunction.Invoke(this);
+        }
+
+        carFreedFunction = null;
     }
 
     private void SetOrientation()

@@ -22,6 +22,7 @@ public class LevelVoilation
     public eVoilation voilation;
     public int fine;
     public Color highlightColor = Color.white;
+    public GameObject voilationPrefab;
 }
 
 [System.Serializable]
@@ -59,5 +60,16 @@ public class LevelManager : MonoBehaviour
         }
 
         return Color.white;
+    }
+
+    public GameObject GetVoilationPrefab(eVoilation voilation)
+    {
+        foreach (LevelVoilation levelVoilation in levelVoilations)
+        {
+            if (levelVoilation.voilation == voilation)
+                return levelVoilation.voilationPrefab;
+        }
+
+        return null;
     }
 }

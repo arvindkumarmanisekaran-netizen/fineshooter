@@ -52,7 +52,19 @@ public class FindShooterManager : MonoBehaviour
     private Vector2 selectorStart = new Vector2(-70f, 66f);
     private Vector2 selectorMoveOffset = new Vector2(70f, -58f);
 
-    private List<Car> spawnedCars = new List<Car> ();
+    public class VoilationCarMap
+    {
+        public Car car;
+        public GameObject voilationCard;
+
+        public VoilationCarMap(Car car, GameObject voilationCard)
+        {
+            this.car = car;
+            this.voilationCard = voilationCard;
+        }
+    }
+
+    private List<VoilationCarMap> spawnedCars = new List<VoilationCarMap> ();
     private bool spawningLevel = false;
     private bool gameOver = false;
 
@@ -62,8 +74,9 @@ public class FindShooterManager : MonoBehaviour
 
     public Image crackle;
 
-
     private eVoilation[] currentLevelVoilations;
+
+    public Transform voilationCardHolder;
 
     public void Awake()
     {
@@ -176,64 +189,72 @@ public class FindShooterManager : MonoBehaviour
 
         foreach (eVoilation voilation in currentLevelVoilations)
         {
+            int fine = levelManager.GetFine(voilation);
+            Color fineColor = levelManager.GetFineColor(voilation);
+            GameObject voilationPrefab = levelManager.GetVoilationPrefab(voilation);
+
             switch (voilation)
             {
                 case eVoilation.SPEEDING_BETWEEN_20_30:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, 0.25f, levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
+                    car.StartMoving(path, pathIndex, 0.25f, fine, fineColor, CarFreed);
                     break;
 
                 case eVoilation.SPEEDING_BETWEEN_50_60:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, 0.4f, levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
+                    car.StartMoving(path, pathIndex, 0.4f, fine, fineColor, CarFreed);
                     break;
 
                 case eVoilation.SPEEDING_GREATER_60:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, 0.6f, levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
+                    car.StartMoving(path, pathIndex, 0.6f, fine, fineColor, CarFreed);
                     break;
 
                 case eVoilation.SIGNAL_RED_LIGHT:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
+                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), fine, fineColor, CarFreed);
                     break;
 
                 case eVoilation.SIGNAL_PEDESTRIAN:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.45f), levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
+                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.45f), fine, fineColor, CarFreed);
                     break;
 
                 case eVoilation.OTHER_MOBILE:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
+                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), fine, fineColor, CarFreed);
                     break;
 
                 case eVoilation.OTHER_NO_SEAT_BELT:
                     car = GetRandomCar();
                     path = pathManager.GetRandomPath(out pathIndex);
-                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
+                    car.StartMoving(path, pathIndex, Random.Range(0.3f, 0.4f), fine, fineColor, CarFreed);
                     break;
 
                 case eVoilation.PARKING_ILLEGAL:
                     car = GetRandomCar();
                     path = pathManager.GetRandomParkingPath();
-                    car.ParkedCar(path, levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
+                    car.ParkedCar(path, fine, fineColor, CarFreed);
                     break;
 
                 case eVoilation.PARKING_HARD_SHOULDER:
                     car = GetRandomCar();
                     path = pathManager.GetRandomParkingPath();
-                    car.ParkedCar(path, levelManager.GetFine(voilation), levelManager.GetFineColor(voilation));
+                    car.ParkedCar(path, fine, fineColor, CarFreed);
                     break;
             }
 
-            spawnedCars.Add(car);
+            GameObject spawnedVoilationCard = GameObject.Instantiate(voilationPrefab);
+            spawnedVoilationCard.transform.SetParent(voilationCardHolder);
+            spawnedVoilationCard.transform.SetAsFirstSibling();
+
+            spawnedCars.Add(new VoilationCarMap(car, spawnedVoilationCard));
 
             crackle.transform.DOKill();
             crackle.transform.DOBlendableScaleBy(new Vector3(0f, -0.5f, 0f), 0.1f).SetEase(Ease.OutBounce)
@@ -262,11 +283,29 @@ public class FindShooterManager : MonoBehaviour
         rayFromTower.SetPosition(1, pos);
     }
 
+    public void CarFreed(Car car)
+    {
+        foreach (VoilationCarMap voilationCarMap in spawnedCars)
+        {
+            if(voilationCarMap.car.gameObject.GetInstanceID() == car.gameObject.GetInstanceID())
+            {
+                GameObject spawnedCardInstance = voilationCarMap.voilationCard;
+
+                if(spawnedCardInstance != null)
+                {
+                    GameObject.Destroy(spawnedCardInstance);
+
+                    return;
+                }
+            }
+        }
+    }
+
     void ManageLevel()
     {
-        foreach(Car car in spawnedCars)
+        foreach(VoilationCarMap voilationCarMap in spawnedCars)
         {
-            if(!car.isFree)
+            if(!voilationCarMap.car.isFree)
             {
                 return;
             }
