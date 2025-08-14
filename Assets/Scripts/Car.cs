@@ -46,7 +46,6 @@ public class Car : MonoBehaviour
 
     private float spawnTime;
 
-    public TMPro.TMP_Text fineText;
     private int fineAssigned;
 
     public float SpawnTime
@@ -106,10 +105,7 @@ public class Car : MonoBehaviour
 
         gameObject.SetActive(true);
 
-        fineText.gameObject.SetActive(fineAssigned != -1);
-
         this.fineAssigned = fineAssigned;
-        SetFineText();
 
         transform.position = path.wps[0];
 
@@ -133,11 +129,8 @@ public class Car : MonoBehaviour
 
         car.DOKill();
         car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
-
-        fineText.gameObject.SetActive(fineAssigned != -1);
         
         this.fineAssigned = fineAssigned;
-        SetFineText();
 
         this.assignedPathIndex = assignedPathIndex;
 
@@ -164,15 +157,11 @@ public class Car : MonoBehaviour
         SetOrientation();
     }
 
-    void SetFineText()
-    {
-        fineText.text = "" + fineAssigned;
-    }
-
     void FreeCar()
     {
         transform.DOKill();
         car.DOKill();
+        car.color = Color.white;
 
         carState = eCarState.None;
         gameObject.SetActive(false);
@@ -257,13 +246,9 @@ public class Car : MonoBehaviour
     {
         fineAssigned -= bulletValue;
 
-        if(fineAssigned <= 0 )
+        if(fineAssigned <= 0)
         {
             FreeCar();
-        }
-        else
-        {
-            SetFineText();
         }
     }
 }

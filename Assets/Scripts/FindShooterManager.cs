@@ -78,6 +78,9 @@ public class FindShooterManager : MonoBehaviour
 
     public Transform voilationCardHolder;
 
+    public Sprite[] gibberishSprites;
+    public Image gibberishImage;
+
     public void Awake()
     {
         int seed = DateTime.Now.Millisecond;
@@ -252,8 +255,10 @@ public class FindShooterManager : MonoBehaviour
 
             GameObject spawnedVoilationCard = GameObject.Instantiate(voilationPrefab);
             spawnedVoilationCard.transform.SetParent(voilationCardHolder);
+            spawnedVoilationCard.transform.localScale = Vector3.one;
             spawnedVoilationCard.transform.SetAsFirstSibling();
 
+            gibberishImage.sprite = gibberishSprites[Random.Range(0, gibberishSprites.Length)];
             spawnedCars.Add(new VoilationCarMap(car, spawnedVoilationCard));
 
             crackle.transform.DOKill();
