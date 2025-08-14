@@ -6,8 +6,6 @@ using TMPro;
 using System.Collections.Generic;
 using Image = UnityEngine.UI.Image;
 using System.Collections;
-using log4net.Core;
-using System.Runtime.ConstrainedExecution;
 
 public class FindShooterManager : MonoBehaviour
 {
