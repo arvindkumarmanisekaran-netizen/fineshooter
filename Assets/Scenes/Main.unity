@@ -2724,6 +2724,9 @@ MonoBehaviour:
   mainMenuOn: {fileID: 21300000, guid: 6bda518d859685e41888ee02466e37bf, type: 3}
   mainMenuOff: {fileID: 21300000, guid: b19b7a870bfb9bd4baf2ccbb23606dd4, type: 3}
   bgm: {fileID: 1292947062}
+  trafficAmbience: {fileID: 1752871350}
+  micAudioSource: {fileID: 1108853623}
+  laserAutoToggleClip: {fileID: 8300000, guid: 8df8db18c69013d4298459267de9fd17, type: 3}
   towerOn: {fileID: 847431277}
   smalliPad: {fileID: 511844442}
   bigiPad: {fileID: 895420543}
@@ -2758,8 +2761,9 @@ Transform:
   m_Children:
   - {fileID: 1441969912}
   - {fileID: 708332084}
-  - {fileID: 1292947063}
   - {fileID: 1752871349}
+  - {fileID: 1292947063}
+  - {fileID: 1108853622}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &637038300
@@ -3008,42 +3012,52 @@ MonoBehaviour:
     fine: 500
     highlightColor: {r: 0.22352943, g: 0.6745098, b: 0, a: 1}
     voilationPrefab: {fileID: 5854419473061951004, guid: a7c4534a761d1614aafc50d1ddc9077c, type: 3}
+    audioClip: {fileID: 8300000, guid: 096678e0f08c85644b828dc71343d21e, type: 3}
   - voilation: 1
     fine: 700
     highlightColor: {r: 0.67058825, g: 0.40000004, b: 0, a: 1}
     voilationPrefab: {fileID: 3817069732928102507, guid: 59f98b38f75152d4aa1d1277e85146d8, type: 3}
+    audioClip: {fileID: 8300000, guid: 03c4c565f43d92a4986ec9f0ee89adec, type: 3}
   - voilation: 2
     fine: 3000
     highlightColor: {r: 0.67058825, g: 0, b: 0, a: 1}
     voilationPrefab: {fileID: 4083707517200003195, guid: 7006e0684c7ed834dba156000a3afae8, type: 3}
+    audioClip: {fileID: 8300000, guid: 6ab1630ecee1548429a52ede45b8260e, type: 3}
   - voilation: 3
     fine: 1500
     highlightColor: {r: 0.86666673, g: 0.24705884, b: 0.04705883, a: 1}
     voilationPrefab: {fileID: 1976432397240727347, guid: 1b2268ddc56b1634e9f88b3779c0cf2a, type: 3}
+    audioClip: {fileID: 8300000, guid: d143e3946a6c6c54485cae101fe312d4, type: 3}
   - voilation: 4
     fine: 600
     highlightColor: {r: 0.67058825, g: 0.21960786, b: 0, a: 1}
     voilationPrefab: {fileID: 5735064448530567921, guid: 2cb064a17c868d84bbd7fd7435992931, type: 3}
+    audioClip: {fileID: 8300000, guid: 8c0ef4a616d1049458c2b2e4935c058e, type: 3}
   - voilation: 5
     fine: 1000
     highlightColor: {r: 0.64705884, g: 0, b: 0, a: 1}
     voilationPrefab: {fileID: 7123610130077884398, guid: ce51c565a5993d148990798552ba81c8, type: 3}
+    audioClip: {fileID: 8300000, guid: 065b1c98424969549be035a918419b7e, type: 3}
   - voilation: 6
     fine: 500
     highlightColor: {r: 0.6901961, g: 0, b: 0.5529412, a: 1}
     voilationPrefab: {fileID: 8890749831367619652, guid: d440071689d6a9c4d9b11766f96b706b, type: 3}
+    audioClip: {fileID: 8300000, guid: 8612cdb48176fa344a26ddcca18d7b32, type: 3}
   - voilation: 7
     fine: 2000
     highlightColor: {r: 1, g: 0, b: 0, a: 1}
     voilationPrefab: {fileID: 7123610130077884398, guid: ce51c565a5993d148990798552ba81c8, type: 3}
+    audioClip: {fileID: 8300000, guid: 065b1c98424969549be035a918419b7e, type: 3}
   - voilation: 8
     fine: 800
     highlightColor: {r: 0.32156864, g: 0, b: 0.654902, a: 1}
     voilationPrefab: {fileID: 4083707517200003195, guid: 2442d1fcc43cfd240996be17b307a210, type: 3}
+    audioClip: {fileID: 8300000, guid: 516c5102eed0ff949886ddbe1912ce62, type: 3}
   - voilation: 9
     fine: 400
     highlightColor: {r: 0, g: 0.6313726, b: 0.6627451, a: 1}
     voilationPrefab: {fileID: 7503474336275073910, guid: a18145d0a2bb9324cb698da4f87ea602, type: 3}
+    audioClip: {fileID: 8300000, guid: f239f695c178c7647ac50fc91116a005, type: 3}
   levels:
   - voilations: 04000000
   - voilations: 0300000004000000
@@ -4287,6 +4301,135 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed17c52844da0094f9b3e8d9866d5b0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1108853621
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1108853622}
+  - component: {fileID: 1108853623}
+  m_Layer: 0
+  m_Name: MicAudioSource
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1108853622
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108853621}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 634528549}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &1108853623
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1108853621}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.137
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &1151677064
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6863,7 +7006,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: c8bfe57fa3376644a9aa6f3593ec3d0d, type: 3}
   m_Resource: {fileID: 8300000, guid: c8bfe57fa3376644a9aa6f3593ec3d0d, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0
+  m_Volume: 0.08
   m_Pitch: 1
   Loop: 0
   Mute: 0

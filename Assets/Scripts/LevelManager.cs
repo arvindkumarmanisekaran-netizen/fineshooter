@@ -23,6 +23,7 @@ public class LevelVoilation
     public int fine;
     public Color highlightColor = Color.white;
     public GameObject voilationPrefab;
+    public AudioClip audioClip;
 }
 
 [System.Serializable]
@@ -72,4 +73,16 @@ public class LevelManager : MonoBehaviour
 
         return null;
     }
+
+    public AudioClip GetAudioClip(eVoilation voilation)
+    {
+        foreach (LevelVoilation levelVoilation in levelVoilations)
+        {
+            if (levelVoilation.voilation == voilation)
+                return levelVoilation.audioClip;
+        }
+
+        return null;
+    }
+
 }

@@ -67,6 +67,9 @@ public class FindShooterManager : MonoBehaviour
 
     public AudioSource bgm;
     public AudioSource trafficAmbience;
+    public AudioSource micAudioSource;
+
+    public AudioClip laserAutoToggleClip;
 
     public SpriteRenderer towerOn;
 
@@ -192,6 +195,9 @@ public class FindShooterManager : MonoBehaviour
 
     void OnLaserModeOnOffToggleClicked()
     {
+        micAudioSource.clip = laserAutoToggleClip;
+        micAudioSource.Play();
+
         this.laserAutoOn = !laserAutoOn;
 
         this.laserModeOnOff.SetSprite(this.laserAutoOn);
@@ -292,12 +298,16 @@ public class FindShooterManager : MonoBehaviour
         Car car = null;
         DOTweenPath path = null;
         spawningLevel = true;
+        
+        if (currentLevel == 1)
+            yield return new WaitForSeconds(laserAutoToggleClip.length);
 
         foreach (eVoilation voilation in currentLevelVoilations)
         {
             int fine = levelManager.GetFine(voilation);
             Color fineColor = levelManager.GetFineColor(voilation);
             GameObject voilationPrefab = levelManager.GetVoilationPrefab(voilation);
+            AudioClip audioClip = levelManager.GetAudioClip(voilation);
 
             switch (voilation)
             {
@@ -366,9 +376,18 @@ public class FindShooterManager : MonoBehaviour
 
             crackle.transform.DOKill();
             crackle.transform.DOBlendableScaleBy(new Vector3(0f, -0.5f, 0f), 0.1f).SetEase(Ease.OutBounce)
-                .SetLoops(4, LoopType.Yoyo);
+                .SetLoops(-1, LoopType.Yoyo);
 
-            yield return new WaitForSeconds(1f);
+            if (audioClip != null)
+            {
+                micAudioSource.clip = audioClip;
+                micAudioSource.Play();
+            }
+
+            yield return new WaitForSeconds(audioClip.length);
+
+            crackle.transform.DOKill();
+            crackle.transform.localScale = Vector3.one;
         }
 
         spawningLevel = false;
