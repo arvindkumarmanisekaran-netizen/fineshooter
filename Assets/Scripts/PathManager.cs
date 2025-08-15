@@ -52,12 +52,12 @@ public class PathManager : MonoBehaviour
         return paths[index];
     }
 
-    public DOTweenPath GetRandomPath(out int pathIndex)
+    public DOTweenPath GetRandomPath()
     {
         int randomPath = Random.Range(0, paths.Count);
 
         if (previousReturnedPathsQueue.Contains(randomPath))
-            return GetRandomPath(out pathIndex);
+            return GetRandomPath();
 
         if(previousReturnedPathsQueue.Count == 0)
         {
@@ -69,8 +69,6 @@ public class PathManager : MonoBehaviour
             previousReturnedPathsQueue.Dequeue();
             previousReturnedPathsQueue.Enqueue(randomPath);
         }
-
-        pathIndex = randomPath;
 
         return GetPath(randomPath);
     }

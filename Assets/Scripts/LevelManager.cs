@@ -26,10 +26,19 @@ public class LevelVoilation
     public AudioClip audioClip;
 }
 
+
+[System.Serializable]
+public class VoilationMap
+{
+    public float voilationDelay;
+    public eVoilation voilation;
+}
+
 [System.Serializable]
 public class Level
 {
-    public eVoilation[] voilations;
+    public float spawnDelay;
+    public VoilationMap[] voilationMaps;
 }
 
 public class LevelManager : MonoBehaviour

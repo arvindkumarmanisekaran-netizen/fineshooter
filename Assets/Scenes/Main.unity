@@ -2677,7 +2677,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameState: 0
-  currentLevel: 1
+  currentLevelIndex: 1
   cars:
   - {fileID: 2047678033}
   - {fileID: 1151677066}
@@ -3059,12 +3059,52 @@ MonoBehaviour:
     voilationPrefab: {fileID: 7503474336275073910, guid: a18145d0a2bb9324cb698da4f87ea602, type: 3}
     audioClip: {fileID: 8300000, guid: f239f695c178c7647ac50fc91116a005, type: 3}
   levels:
-  - voilations: 04000000
-  - voilations: 0300000004000000
-  - voilations: 020000000300000005000000
-  - voilations: 000000000500000003000000
-  - voilations: 00000000010000000800000002000000
-  - voilations: 01000000080000000900000002000000
+  - spawnDelay: 6
+    voilationMaps:
+    - voilationDelay: 0
+      voilation: 0
+  - spawnDelay: 6
+    voilationMaps:
+    - voilationDelay: 0
+      voilation: 1
+    - voilationDelay: 3
+      voilation: 9
+  - spawnDelay: 4
+    voilationMaps: []
+  - spawnDelay: 3
+    voilationMaps:
+    - voilationDelay: 0
+      voilation: 3
+    - voilationDelay: 3
+      voilation: 8
+    - voilationDelay: 4
+      voilation: 1
+  - spawnDelay: 6
+    voilationMaps:
+    - voilationDelay: 0
+      voilation: 4
+    - voilationDelay: 3
+      voilation: 0
+    - voilationDelay: 0
+      voilation: 6
+    - voilationDelay: 9
+      voilation: 7
+  - spawnDelay: 9
+    voilationMaps:
+    - voilationDelay: 0
+      voilation: 1
+    - voilationDelay: 0
+      voilation: 2
+    - voilationDelay: 6
+      voilation: 3
+    - voilationDelay: 9
+      voilation: 0
+    - voilationDelay: 0
+      voilation: 1
+    - voilationDelay: 0
+      voilation: 6
+    - voilationDelay: 6
+      voilation: 3
 --- !u!1 &790498238
 GameObject:
   m_ObjectHideFlags: 0
@@ -8045,7 +8085,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1995635889}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -8082,7 +8122,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 1fb82bd35346b3247a69f2c9291e4520, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 89c376ab8c172f94baed165a17e5746e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -8091,7 +8131,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
+  m_MaskInteraction: 2
   m_SpriteSortPoint: 0
 --- !u!1 &2001266704
 GameObject:

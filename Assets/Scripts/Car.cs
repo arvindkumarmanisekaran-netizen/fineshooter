@@ -24,7 +24,7 @@ public class Car : MonoBehaviour
 
     public eCarState carState = eCarState.None;
 
-    public DOTweenPath assignedPath;
+    private Vector3[] assignedPath;
 
     private SpriteRenderer car;
 
@@ -33,16 +33,11 @@ public class Car : MonoBehaviour
     public Sprite car_down;
     public Sprite car_up;
 
-    private int currentIndex;
-    private Vector3 currentPos;
     private Vector3 moveDir;
-    private Vector3 nextPos;
 
     public eCarOrientation carOrientation;
 
     public Vector2[] orientations;
-
-    private int assignedPathIndex = 0;
 
     private float spawnTime;
 
@@ -51,11 +46,6 @@ public class Car : MonoBehaviour
     public float SpawnTime
     {
         get { return spawnTime; }
-    }
-
-    public int AssignedPathIndex
-    {
-        get { return assignedPathIndex; }
     }
 
     public bool isFree
@@ -70,8 +60,10 @@ public class Car : MonoBehaviour
 
     private bool inited = false;
 
-    private Action<Car> carFreedFunction = null;
+    private Action<int, Car> carMessageFunction = null;
 
+    private Color fineColor;
+   
     void Init()
     {
         car = GetComponentInChildren<SpriteRenderer>();
@@ -85,76 +77,101 @@ public class Car : MonoBehaviour
             Init();
     }
 
-    public void ParkedCar(DOTweenPath path, int fineAssigned, Color fineColor, Action<Car> carFreedFunction)
+    public void ParkedCar(DOTweenPath path, int fineAssigned, Color fineColor, Action<int, Car> carMessageFunction)
     {
         if (!inited)
             Init();
 
-        currentIndex = 0;
-
         carState = eCarState.Parked;
 
-        this.carFreedFunction = carFreedFunction;
+        this.carMessageFunction = carMessageFunction;
 
         transform.DOKill();
 
-        assignedPath = path;
+        assignedPath = path.wps.ToArray();
 
-        car.DOKill();
-        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+        car.color = Color.white;
+
+        this.fineColor = fineColor;
 
         gameObject.SetActive(true);
 
         this.fineAssigned = fineAssigned;
 
-        transform.position = path.wps[0];
+        transform.position = assignedPath[0];
 
-        moveDir = (path.wps[1] - path.wps[0]).normalized;
-        
+        moveDir = (assignedPath[1] - assignedPath[0]).normalized;
+
         SetOrientation();
+
+        InitialCarBlinker();
+    }
+    
+    void InitialCarBlinker()
+    {
+        car.DOKill();
+        car.color = Color.white;
+        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(6, LoopType.Yoyo).SetDelay(1f).OnComplete(CarBlinker);
     }
 
-    public void StartMoving(DOTweenPath path, int assignedPathIndex, float speed, int fineAssigned, Color fineColor, Action<Car> carFreedFunction)
+    void CarBlinker()
+    {
+        car.DOKill();
+        car.color = Color.white;
+        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(6, LoopType.Yoyo).SetDelay(6f).OnComplete(CarBlinker);
+    }
+
+    public void StartMoving(DOTweenPath path, float speed, int fineAssigned, Color fineColor, Action<int, Car> carMessageFunction)
     {
         if (!inited)
             Init();
 
         spawnTime = Time.time;
 
-        assignedPath = path;
+        assignedPath = path.wps.ToArray();
 
         moveSpeed = speed;
 
-        this.carFreedFunction = carFreedFunction;
+        this.carMessageFunction = carMessageFunction;
 
-        car.DOKill();
-        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
-        
         this.fineAssigned = fineAssigned;
 
-        this.assignedPathIndex = assignedPathIndex;
-
-        currentIndex = 0;
+        this.fineColor = fineColor;
 
         carState = eCarState.Moving;
 
         gameObject.SetActive(true);
 
-        currentPos = assignedPath.wps[0];
-        transform.position = currentPos;
+        transform.position = assignedPath[0];
 
-        SetCar();
+        InitialCarBlinker();
 
+        MoveAlongPath(assignedPath);
+    }
+
+    void MoveAlongPath(Vector3[] pathArray)
+    {
         transform.DOKill();
-        transform.DOPath(assignedPath.wps.ToArray(), moveSpeed).SetSpeedBased(true).SetEase(Ease.Linear)
-            .OnStepComplete(FreeCar).OnWaypointChange(WayPointChanged);
+        transform.DOPath(pathArray, moveSpeed).SetSpeedBased(true).SetEase(Ease.Linear)
+            .OnWaypointChange(WayPointChanged).OnStepComplete(PathComplete);
+    }
+
+    void PathComplete()
+    {
+        if(this.carMessageFunction != null)
+        {
+            this.carMessageFunction(2, this);
+        }
     }
 
     void WayPointChanged(int index)
     {
-        moveDir = (assignedPath.wps[index + 1] - assignedPath.wps[index]).normalized;
+        if(index + 1 < assignedPath.Length)
+        {
+            moveDir = (assignedPath[index + 1] - assignedPath[index]).normalized;
 
-        SetOrientation();
+            SetOrientation();
+        }
     }
 
     void FreeCar()
@@ -166,14 +183,12 @@ public class Car : MonoBehaviour
         carState = eCarState.None;
         gameObject.SetActive(false);
 
-        currentIndex = -1;
-
-        if (carFreedFunction != null)
+        if (carMessageFunction != null)
         {
-            carFreedFunction.Invoke(this);
+            carMessageFunction.Invoke(1, this);
         }
 
-        carFreedFunction = null;
+        carMessageFunction = null;
     }
 
     private void SetOrientation()
@@ -222,26 +237,6 @@ public class Car : MonoBehaviour
                                                     currentOrientation.y * Mathf.Abs(scale.y));
     }
 
-    void SetCar()
-    {
-        if (assignedPath != null)
-        {
-            if (currentIndex + 1 >= assignedPath.wps.Count)
-            {
-                FreeCar();
-
-                return;
-            }
-
-            Vector3 startPos = assignedPath.wps[currentIndex];
-            nextPos = assignedPath.wps[currentIndex + 1];
-
-            moveDir = (nextPos - startPos).normalized;
-
-            SetOrientation();
-        }
-    }
-
     internal void BulletHit(int bulletValue)
     {
         fineAssigned -= bulletValue;
@@ -250,5 +245,13 @@ public class Car : MonoBehaviour
         {
             FreeCar();
         }
+    }
+
+    public void AssignPath(DOTweenPath path)
+    {
+        assignedPath = path.wps.ToArray();
+        transform.position = assignedPath[0];
+
+        MoveAlongPath(assignedPath);
     }
 }
