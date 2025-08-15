@@ -6,6 +6,7 @@ using TMPro;
 using System.Collections.Generic;
 using Image = UnityEngine.UI.Image;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public enum eGameState
@@ -64,6 +65,8 @@ public class FindShooterManager : MonoBehaviour
     public Image mainMenu;
     public Sprite mainMenuOn;
     public Sprite mainMenuOff;
+
+    public GameObject creditScreen;
 
     public AudioSource bgm;
     public AudioSource trafficAmbience;
@@ -169,6 +172,11 @@ public class FindShooterManager : MonoBehaviour
         mainMenu.gameObject.SetActive(false);
     }
 
+    public void BackClicked()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
     IEnumerator TowerOnOff()
     {
         while (true)
@@ -261,6 +269,8 @@ public class FindShooterManager : MonoBehaviour
             laserLoopAudioSource.Stop();
 
             StopCoroutine("PoliceSirens");
+
+            creditScreen.SetActive(true);
         }
     }
 
@@ -456,7 +466,7 @@ public class FindShooterManager : MonoBehaviour
         {
             case 1:
                 ReleaseCar(car);
-                AudioManager.instance.PlaySound(voilatorEliminated, 0.4f);
+                AudioManager.instance.PlaySound(voilatorEliminated, 1f);
                 break;
 
             case 2:
