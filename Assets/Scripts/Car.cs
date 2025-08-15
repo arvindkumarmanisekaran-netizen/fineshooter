@@ -103,7 +103,6 @@ public class Car : MonoBehaviour
 
         this.fineColor = fineColor;
 
-        fineText.color = fineColor;
         fineText.gameObject.SetActive(true);
 
         gameObject.SetActive(true);
@@ -135,7 +134,6 @@ public class Car : MonoBehaviour
         car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(6, LoopType.Yoyo).SetDelay(6f).OnComplete(() => { CarBlinker(); });
     }
 
-
     public void StartMoving(DOTweenPath path, float speed, int fineAssigned, Color fineColor, Action<int, Car> carMessageFunction)
     {
         if (!inited)
@@ -153,7 +151,6 @@ public class Car : MonoBehaviour
 
         this.fineColor = fineColor;
 
-        fineText.color = fineColor;
         fineText.gameObject.SetActive(true);
 
         SetFineText();
@@ -264,18 +261,19 @@ public class Car : MonoBehaviour
         if (fineAssigned <= 0)
         {
             fineText.gameObject.SetActive(false);
-            transform.DOShakePosition(0.07f, 0.1f, 8).OnComplete(() => StartCoroutine("ReleaseCar"));
+            transform.DOKill();
+            transform.DOShakePosition(0.01f, 0.1f, 2).SetEase(Ease.Linear).OnComplete(() => StartCoroutine("ReleaseCar"));
         }
         else
         {
             fineText.text = fineAssigned.ToString();
-            transform.DOShakePosition(0.07f, 0.1f, 8); 
+            transform.DOShakePosition(0.07f, 0.1f, 3); 
         }
     }
 
     IEnumerator ReleaseCar()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.2f);
 
         FreeCar();
     }

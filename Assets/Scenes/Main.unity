@@ -2852,6 +2852,8 @@ RectTransform:
   - {fileID: 623818842}
   - {fileID: 1643892623}
   - {fileID: 1874563010}
+  - {fileID: 1216947820}
+  - {fileID: 1282900091}
   - {fileID: 129260852}
   - {fileID: 1133919947}
   - {fileID: 1885788668}
@@ -3379,19 +3381,19 @@ MonoBehaviour:
   levelVoilations:
   - voilation: 0
     fine: 500
-    highlightColor: {r: 0.22352943, g: 0.6745098, b: 0, a: 1}
+    highlightColor: {r: 0.6431373, g: 0.24313727, b: 0.5294118, a: 1}
     voilationPrefab: {fileID: 5854419473061951004, guid: a7c4534a761d1614aafc50d1ddc9077c, type: 3}
     radioAudioClip: {fileID: 8300000, guid: 096678e0f08c85644b828dc71343d21e, type: 3}
     sfxClips: []
   - voilation: 1
     fine: 700
-    highlightColor: {r: 0.67058825, g: 0.40000004, b: 0, a: 1}
+    highlightColor: {r: 0.74509805, g: 0.4666667, b: 0, a: 1}
     voilationPrefab: {fileID: 3817069732928102507, guid: 59f98b38f75152d4aa1d1277e85146d8, type: 3}
     radioAudioClip: {fileID: 8300000, guid: 03c4c565f43d92a4986ec9f0ee89adec, type: 3}
     sfxClips: []
   - voilation: 2
     fine: 3000
-    highlightColor: {r: 0.67058825, g: 0, b: 0, a: 1}
+    highlightColor: {r: 0.5254902, g: 0, b: 0, a: 1}
     voilationPrefab: {fileID: 4083707517200003195, guid: 7006e0684c7ed834dba156000a3afae8, type: 3}
     radioAudioClip: {fileID: 8300000, guid: 6ab1630ecee1548429a52ede45b8260e, type: 3}
     sfxClips:
@@ -3400,7 +3402,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 2f3d9c42943404046ac0f68d58a018ae, type: 3}
   - voilation: 3
     fine: 1500
-    highlightColor: {r: 0.86666673, g: 0.24705884, b: 0.04705883, a: 1}
+    highlightColor: {r: 1, g: 0.2392157, b: 0, a: 1}
     voilationPrefab: {fileID: 1976432397240727347, guid: 1b2268ddc56b1634e9f88b3779c0cf2a, type: 3}
     radioAudioClip: {fileID: 8300000, guid: d143e3946a6c6c54485cae101fe312d4, type: 3}
     sfxClips:
@@ -3408,25 +3410,25 @@ MonoBehaviour:
     - {fileID: 8300000, guid: ae1111513747ae74ab4951d57d381616, type: 3}
   - voilation: 4
     fine: 600
-    highlightColor: {r: 0.67058825, g: 0.21960786, b: 0, a: 1}
+    highlightColor: {r: 0.2627451, g: 0.3372549, b: 0.7176471, a: 1}
     voilationPrefab: {fileID: 5735064448530567921, guid: 2cb064a17c868d84bbd7fd7435992931, type: 3}
     radioAudioClip: {fileID: 8300000, guid: 8c0ef4a616d1049458c2b2e4935c058e, type: 3}
     sfxClips: []
   - voilation: 5
     fine: 1000
-    highlightColor: {r: 0.64705884, g: 0, b: 0, a: 1}
+    highlightColor: {r: 0.16078432, g: 0.16078432, b: 0.16078432, a: 1}
     voilationPrefab: {fileID: 7123610130077884398, guid: ce51c565a5993d148990798552ba81c8, type: 3}
     radioAudioClip: {fileID: 8300000, guid: 46f1e20c3b1cf39489c8ea071f4eea2b, type: 3}
     sfxClips: []
   - voilation: 6
     fine: 500
-    highlightColor: {r: 0.6901961, g: 0, b: 0.5529412, a: 1}
+    highlightColor: {r: 0, g: 0.18431373, b: 0, a: 1}
     voilationPrefab: {fileID: 8890749831367619652, guid: d440071689d6a9c4d9b11766f96b706b, type: 3}
     radioAudioClip: {fileID: 8300000, guid: 8612cdb48176fa344a26ddcca18d7b32, type: 3}
     sfxClips: []
   - voilation: 7
     fine: 2000
-    highlightColor: {r: 1, g: 0, b: 0, a: 1}
+    highlightColor: {r: 0, g: 0, b: 0.6627451, a: 1}
     voilationPrefab: {fileID: 4083707517200003195, guid: db7f48e59af0e9a45890d5d94f35df18, type: 3}
     radioAudioClip: {fileID: 8300000, guid: 065b1c98424969549be035a918419b7e, type: 3}
     sfxClips:
@@ -3435,13 +3437,13 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 4244620ff22ef8a4cac21cd376dfcb3a, type: 3}
   - voilation: 8
     fine: 800
-    highlightColor: {r: 0.32156864, g: 0, b: 0.654902, a: 1}
+    highlightColor: {r: 0.30980393, g: 0, b: 0.63529414, a: 1}
     voilationPrefab: {fileID: 4083707517200003195, guid: 2442d1fcc43cfd240996be17b307a210, type: 3}
     radioAudioClip: {fileID: 8300000, guid: 516c5102eed0ff949886ddbe1912ce62, type: 3}
     sfxClips: []
   - voilation: 9
     fine: 400
-    highlightColor: {r: 0, g: 0.6313726, b: 0.6627451, a: 1}
+    highlightColor: {r: 0, g: 0.62352943, b: 0.654902, a: 1}
     voilationPrefab: {fileID: 7503474336275073910, guid: a18145d0a2bb9324cb698da4f87ea602, type: 3}
     radioAudioClip: {fileID: 8300000, guid: f239f695c178c7647ac50fc91116a005, type: 3}
     sfxClips: []
@@ -4049,7 +4051,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: a94ecd5d52d23be4db3a41c7f4605283, type: 3}
   m_Resource: {fileID: 8300000, guid: a94ecd5d52d23be4db3a41c7f4605283, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.07
+  m_Volume: 0.06
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -5719,16 +5721,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1216947819}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1885788668}
+  m_Father: {fileID: 616246908}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -366.3, y: -256.2}
+  m_AnchoredPosition: {x: -417, y: -244}
   m_SizeDelta: {x: 339, y: 207}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1216947821
@@ -6149,6 +6151,81 @@ MonoBehaviour:
   lastSrcRotation: {x: -0, y: -0, z: -0, w: 1}
   wpsDropdown: 1
   dropToFloorOffset: 0
+--- !u!1 &1282900090
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1282900091}
+  - component: {fileID: 1282900093}
+  - component: {fileID: 1282900092}
+  m_Layer: 5
+  m_Name: Fine Laser Aiming
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1282900091
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1282900090}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 616246908}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -122.7, y: -408}
+  m_SizeDelta: {x: 180, y: 121}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1282900092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1282900090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 74adda01ac2ab1247bb24f7befb911a9, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1282900093
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1282900090}
+  m_CullTransparentMesh: 1
 --- !u!1001 &1288036044
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9499,7 +9576,6 @@ RectTransform:
   - {fileID: 2044637880}
   - {fileID: 1398081558}
   - {fileID: 611704089}
-  - {fileID: 1216947820}
   m_Father: {fileID: 616246908}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}

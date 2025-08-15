@@ -101,8 +101,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cash: {fileID: 737664508649110364}
-  ease1: 25
+  ease1: 7
   ease2: 25
-  duration1: 0.5
-  duration2: 1
+  duration1: 0.2
+  duration2: 0.2
   scale: {x: 1.25, y: 1.25, z: 1.25}
