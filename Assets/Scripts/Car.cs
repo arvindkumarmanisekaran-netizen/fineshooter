@@ -43,6 +43,11 @@ public class Car : MonoBehaviour
 
     private int fineAssigned;
 
+    public int FineAssigned
+    {
+        get {  return fineAssigned; } 
+    }
+
     public float SpawnTime
     {
         get { return spawnTime; }
@@ -63,7 +68,7 @@ public class Car : MonoBehaviour
     private Action<int, Car> carMessageFunction = null;
 
     private Color fineColor;
-   
+
     void Init()
     {
         car = GetComponentInChildren<SpriteRenderer>();

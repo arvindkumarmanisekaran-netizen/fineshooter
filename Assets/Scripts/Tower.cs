@@ -16,6 +16,7 @@ public class Tower : MonoBehaviour
 
     private Color colorTransparent = new Color(1f, 0f, 0f, 0f);
 
+    public AudioClip fireAudioClip;
 
     public void SelectTower()
     {
@@ -43,6 +44,8 @@ public class Tower : MonoBehaviour
 
     public void Fire()
     {
+        AudioManager.instance.PlaySound(fireAudioClip);
+
         tower_flash.DOKill();
         tower_flash.DOColor(new Color(1f, 1f, 1f, 0.6f), 0.1f).OnComplete(SelectTower);
     }

@@ -23,7 +23,8 @@ public class LevelVoilation
     public int fine;
     public Color highlightColor = Color.white;
     public GameObject voilationPrefab;
-    public AudioClip audioClip;
+    public AudioClip radioAudioClip;
+    public AudioClip[] sfxClips;
 }
 
 
@@ -83,15 +84,32 @@ public class LevelManager : MonoBehaviour
         return null;
     }
 
-    public AudioClip GetAudioClip(eVoilation voilation)
+    public AudioClip GetMicAudioClip(eVoilation voilation)
     {
         foreach (LevelVoilation levelVoilation in levelVoilations)
         {
             if (levelVoilation.voilation == voilation)
-                return levelVoilation.audioClip;
+                return levelVoilation.radioAudioClip;
         }
 
         return null;
     }
 
+    public AudioClip GetRandomSFXClip(eVoilation voilation)
+    {
+        foreach (LevelVoilation levelVoilation in levelVoilations)
+        {
+            if (levelVoilation.voilation == voilation)
+            {
+                int numsfxClips = levelVoilation.sfxClips.Length;
+
+                if (numsfxClips == 0)
+                    break;
+
+                return levelVoilation.sfxClips[Random.Range(0, numsfxClips)];
+            }
+        }
+
+        return null;
+    }
 }

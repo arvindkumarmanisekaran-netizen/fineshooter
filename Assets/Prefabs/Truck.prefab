@@ -143,6 +143,7 @@ MonoBehaviour:
   - {x: -1, y: 1}
   - {x: 1, y: 1}
   - {x: 1, y: 1}
+  carHitAudioClip: {fileID: 8300000, guid: b9a9fa2cf0b6a9d40b8bf5e15641e6c2, type: 3}
 --- !u!61 &1186696798476218424
 BoxCollider2D:
   m_ObjectHideFlags: 0

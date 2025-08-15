@@ -68,10 +68,12 @@ public class FindShooterManager : MonoBehaviour
     public AudioSource bgm;
     public AudioSource trafficAmbience;
     public AudioSource micAudioSource;
+    public AudioSource laserLoopAudioSource;
 
-    public AudioClip laserAutoToggleClip;
+    public AudioClip[] policeSirensAudioClips;
 
     public SpriteRenderer towerOn;
+
 
     public class VoilationCarMap
     {
@@ -103,9 +105,10 @@ public class FindShooterManager : MonoBehaviour
 
     public LaserModeOnOff laserModeOnOff;
     private bool laserAutoOn = true;
-    private bool inGameCursor = true;
 
     public GameObject cashStackPrefab;
+
+    public AudioClip voilatorEliminated;
 
     public void Awake()
     {
@@ -197,9 +200,6 @@ public class FindShooterManager : MonoBehaviour
 
     void OnLaserModeOnOffToggleClicked()
     {
-        micAudioSource.clip = laserAutoToggleClip;
-        micAudioSource.Play();
-
         this.laserAutoOn = !laserAutoOn;
 
         this.laserModeOnOff.SetSprite(this.laserAutoOn);
@@ -210,9 +210,29 @@ public class FindShooterManager : MonoBehaviour
 
             StopCoroutine("TowerOnOff");
 
+            laserLoopAudioSource.Play();
+
+            StartCoroutine("PoliceSirens");
+
             towerOn.gameObject.SetActive(false);
 
             StartPlaying();
+        }
+    }
+
+    IEnumerator PoliceSirens()
+    {
+        while(gameState == eGameState.Playing)
+        {
+            float waitTime = Random.Range(4f, 10f);
+
+            yield return new WaitForSeconds(waitTime);
+
+            int randomPoliceSiren = Random.Range(0, policeSirensAudioClips.Length);
+
+            AudioManager.instance.PlaySound(policeSirensAudioClips[randomPoliceSiren], 0.2f);
+
+            yield return new WaitForSeconds(policeSirensAudioClips[randomPoliceSiren].length);
         }
     }
 
@@ -237,6 +257,10 @@ public class FindShooterManager : MonoBehaviour
         else
         {
             gameState = eGameState.GameOver;
+
+            laserLoopAudioSource.Stop();
+
+            StopCoroutine("PoliceSirens");
         }
     }
 
@@ -286,6 +310,8 @@ public class FindShooterManager : MonoBehaviour
         {
             bullet.Fire(currentSelectedTower.transform.position, currentFine);
             currentSelectedTower.Fire();
+            laserLoopAudioSource.volume = 0f;
+            laserLoopAudioSource.DOFade(0.4f, 1f);
         }
     }
 
@@ -300,9 +326,6 @@ public class FindShooterManager : MonoBehaviour
         DOTweenPath path = null;
         spawningLevel = true;
         
-        if (currentLevelIndex == 1)
-            yield return new WaitForSeconds(laserAutoToggleClip.length);
-
         yield return new WaitForSeconds(currentLevel.spawnDelay);
 
         foreach (VoilationMap voilationMap in currentLevel.voilationMaps)
@@ -310,7 +333,8 @@ public class FindShooterManager : MonoBehaviour
             int fine = levelManager.GetFine(voilationMap.voilation);
             Color fineColor = levelManager.GetFineColor(voilationMap.voilation);
             GameObject voilationPrefab = levelManager.GetVoilationPrefab(voilationMap.voilation);
-            AudioClip audioClip = levelManager.GetAudioClip(voilationMap.voilation);
+            AudioClip micAudioClip = levelManager.GetMicAudioClip(voilationMap.voilation);
+            AudioClip sfxAudioClip = levelManager.GetRandomSFXClip(voilationMap.voilation);
             car = GetRandomCar();
 
             switch (voilationMap.voilation)
@@ -378,13 +402,18 @@ public class FindShooterManager : MonoBehaviour
             crackle.transform.DOBlendableScaleBy(new Vector3(0f, -0.5f, 0f), 0.1f).SetEase(Ease.OutBounce)
                 .SetLoops(-1, LoopType.Yoyo);
 
-            if (audioClip != null)
+            if (micAudioClip != null)
             {
-                micAudioSource.clip = audioClip;
+                micAudioSource.clip = micAudioClip;
                 micAudioSource.Play();
             }
 
-            yield return new WaitForSeconds(audioClip.length);
+            if (sfxAudioClip != null)
+            {
+                AudioManager.instance.PlaySound(sfxAudioClip, 0.2f);
+            }
+
+            yield return new WaitForSeconds(micAudioClip.length);
 
             crackle.transform.DOKill();
             crackle.transform.localScale = Vector3.one;
@@ -426,7 +455,8 @@ public class FindShooterManager : MonoBehaviour
         switch (message)
         {
             case 1:
-                ReleaseCar(car); 
+                ReleaseCar(car);
+                AudioManager.instance.PlaySound(voilatorEliminated, 0.4f);
                 break;
 
             case 2:
@@ -492,14 +522,13 @@ public class FindShooterManager : MonoBehaviour
 
         Vector3 viewPointPosition = (Camera.main.ScreenToViewportPoint(Input.mousePosition));
 
-        if (inGameCursor)
+        if (!Cursor.visible)
         {
             if (viewPointPosition.x < 0.16f || viewPointPosition.x > 0.85f)
             {
                 Cursor.visible = true;
-                //Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                laserLoopAudioSource.Stop();
                 rayFromTower.gameObject.SetActive(false);
-                inGameCursor = false;
             }
         }
         else 
@@ -507,9 +536,8 @@ public class FindShooterManager : MonoBehaviour
             if (viewPointPosition.x > 0.16f && viewPointPosition.x < 0.85f)
             {
                 Cursor.visible = false;
-                //Cursor.SetCursor(cursorTexture, cursorOffset, CursorMode.ForceSoftware);
+                laserLoopAudioSource.Play();
                 rayFromTower.gameObject.SetActive(true);
-                inGameCursor = true;
             }
         }
 
@@ -518,7 +546,7 @@ public class FindShooterManager : MonoBehaviour
             ManageLevel();
         }
 
-        if (inGameCursor)
+        if (!Cursor.visible)
         {
             DrawRayFromTower();
         }

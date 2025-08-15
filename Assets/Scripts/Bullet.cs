@@ -15,6 +15,12 @@ public class Bullet : MonoBehaviour
 
     private int bulletValue = 0;
 
+    public AudioClip carHitClip;
+    public AudioClip wrongHitClip;
+    public AudioClip buildingHitClip;
+    public AudioClip waterHitClip;
+
+
     public bool Fired
     {
         get { return fired; }
@@ -72,7 +78,24 @@ public class Bullet : MonoBehaviour
         if(collider.gameObject.layer == LayerMask.NameToLayer("Car"))
         {
             Car car = collider.gameObject.GetComponent<Car>();
-            car.BulletHit(bulletValue);
+
+            if(bulletValue <= car.FineAssigned)
+            {
+                car.BulletHit(bulletValue);
+                AudioManager.instance.PlaySound(carHitClip);
+            }
+            else
+            {
+                AudioManager.instance.PlaySound(wrongHitClip);
+            }
+        }
+        else if(collider.gameObject.layer == LayerMask.NameToLayer("Buildings"))
+        {
+            AudioManager.instance.PlaySound(buildingHitClip);
+        }
+        else if(collider.gameObject.layer == LayerMask.NameToLayer("Water"))
+        {
+            AudioManager.instance.PlaySound(waterHitClip);
         }
 
         BulletRest();
