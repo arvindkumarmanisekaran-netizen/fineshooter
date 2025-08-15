@@ -105,6 +105,8 @@ public class FindShooterManager : MonoBehaviour
     private bool laserAutoOn = true;
     private bool inGameCursor = true;
 
+    public GameObject cashStackPrefab;
+
     public void Awake()
     {
         int seed = DateTime.Now.Millisecond;
@@ -449,6 +451,8 @@ public class FindShooterManager : MonoBehaviour
 
                 if (spawnedCardInstance != null)
                 {
+                    GameObject.Instantiate(cashStackPrefab, car.transform.position, Quaternion.identity);
+
                     GameObject.Destroy(spawnedCardInstance);
 
                     return;

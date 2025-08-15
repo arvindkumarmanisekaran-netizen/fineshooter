@@ -245,6 +245,10 @@ public class Car : MonoBehaviour
         {
             FreeCar();
         }
+        else
+        {
+            transform.DOShakePosition(0.05f, 0.1f, 8);
+        }
     }
 
     public void AssignPath(DOTweenPath path)

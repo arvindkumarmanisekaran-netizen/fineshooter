@@ -2746,6 +2746,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 0050fd38353438742aa72b97c5986934, type: 3}
   gibberishImage: {fileID: 250736293}
   laserModeOnOff: {fileID: 129260855}
+  cashStackPrefab: {fileID: 6841001566289735996, guid: e43f1bd3f64713346b1230e0e20a8088, type: 3}
 --- !u!4 &634528549
 Transform:
   m_ObjectHideFlags: 0
@@ -7148,11 +7149,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6573720038481363705, guid: e10f052577ccffb42b2af557e33397c9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.0097
       objectReference: {fileID: 0}
     - target: {fileID: 6573720038481363705, guid: e10f052577ccffb42b2af557e33397c9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.0624
       objectReference: {fileID: 0}
     - target: {fileID: 6573720038481363705, guid: e10f052577ccffb42b2af557e33397c9, type: 3}
       propertyPath: m_LocalPosition.z
