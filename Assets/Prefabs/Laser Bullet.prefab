@@ -175,7 +175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4c96b319b07c69449a47c713fa51ecf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 2
+  moveSpeed: 1
   carHitClip: {fileID: 8300000, guid: b9a9fa2cf0b6a9d40b8bf5e15641e6c2, type: 3}
   wrongHitClip: {fileID: 8300000, guid: ee5c3ba27fa092842932c4cac02d96d2, type: 3}
   buildingHitClip: {fileID: 8300000, guid: 6669442e41d5d0d49b092c36e17eef87, type: 3}

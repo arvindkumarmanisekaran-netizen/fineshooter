@@ -71,7 +71,6 @@ public class FindShooterManager : MonoBehaviour
     public CanvasGroup autoToggleScreen;
     public CanvasGroup creditScreen;
 
-    public AudioSource bgm;
     public AudioSource trafficAmbience;
     public AudioSource micAudioSource;
     public AudioSource laserLoopAudioSource;
@@ -112,7 +111,11 @@ public class FindShooterManager : MonoBehaviour
 
     public GameObject cashStackPrefab;
 
-    public AudioClip voilatorEliminated;
+    public AudioClip voilatorEliminatedAudioClip;
+    public AudioClip towerSelectedAudioClip;
+    public AudioClip laserAutoOffAudioClip;
+    public AudioClip calculatorNumberPressAudioClip;
+
 
     public void Awake()
     {
@@ -129,21 +132,6 @@ public class FindShooterManager : MonoBehaviour
         
         gameState = eGameState.MainMenu;
         StartCoroutine("MenuMenuAnimation");
-
-        PlayBGM();
-    }
-
-    void PlayBGM()
-    {
-        bgm.DOKill();
-        bgm.volume = 0f;
-
-        float bgmVolume = gameState == eGameState.MainMenu ? 0.5f : 0.05f;
-
-        bgm.DOFade(bgmVolume, 3f).SetEase(Ease.InOutQuad);
-        bgm.DOFade(0f, 3f).SetEase(Ease.InOutQuad).SetDelay(bgm.clip.length - 5f);
-        bgm.Play();
-        Invoke("PlayBGM", bgm.clip.length + 2f);
     }
 
     IEnumerator MenuMenuAnimation()
@@ -163,9 +151,6 @@ public class FindShooterManager : MonoBehaviour
 
         mainMenuScreen.DOFade(0f, 1f).OnComplete(() => mainMenuScreen.gameObject.SetActive(false));
         autoToggleScreen.DOFade(1f, 1f);
-
-        bgm.DOKill();
-        bgm.DOFade(0.05f, 0.3f).SetEase(Ease.InOutQuad);
 
         trafficAmbience.gameObject.SetActive(true);
 
@@ -218,6 +203,13 @@ public class FindShooterManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    public void CreditsClicked()
+    {
+        mainMenuScreen.DOFade(0f, 1f).OnComplete(() => mainMenuScreen.gameObject.SetActive(false));
+        creditScreen.DOFade(1f, 1f);
+        creditScreen.blocksRaycasts = true;
+    }
+
     IEnumerator TowerOnOff()
     {
         while (true)
@@ -254,6 +246,8 @@ public class FindShooterManager : MonoBehaviour
         if (!laserAutoOn)
         {
             gameState = eGameState.Playing;
+
+            AudioManager.instance.PlaySound(laserAutoOffAudioClip, 0.4f);
 
             autoToggleScreen.DOFade(0f, 0.5f).OnComplete(() => autoToggleScreen.gameObject.SetActive(false));
 
@@ -304,8 +298,9 @@ public class FindShooterManager : MonoBehaviour
             laserLoopAudioSource.Stop();
 
             StopCoroutine("PoliceSirens");
-            
+
             creditScreen.DOFade(1f, 1f);
+            creditScreen.blocksRaycasts = true;
         }
     }
 
@@ -491,10 +486,10 @@ public class FindShooterManager : MonoBehaviour
 
         float currentLength = (pos - currentSelectedTower.transform.position).magnitude;
 
-        if(currentLength > 1f)
+        if(currentLength > 2f)
         {
             pos = currentSelectedTower.transform.position +
-                          (pos - currentSelectedTower.transform.position).normalized * 1f;
+                          (pos - currentSelectedTower.transform.position).normalized * 2f;
         }
 
         rayFromTower.SetPosition(1, pos);
@@ -506,7 +501,7 @@ public class FindShooterManager : MonoBehaviour
         {
             case 1:
                 ReleaseCar(car);
-                AudioManager.instance.PlaySound(voilatorEliminated, 0.4f);
+                AudioManager.instance.PlaySound(voilatorEliminatedAudioClip, 0.4f);
                 break;
 
             case 2:
@@ -577,7 +572,11 @@ public class FindShooterManager : MonoBehaviour
                 int value;
                 if (int.TryParse(inputString, out value))
                 {
-                    currentFine = value * 100;
+                    if(value == 1)
+                    {
+                        AudioManager.instance.PlaySound(calculatorNumberPressAudioClip, 0.4f);
+                        currentFine = value * 100;
+                    }
                 }
             }
 
@@ -628,6 +627,8 @@ public class FindShooterManager : MonoBehaviour
             int value;
             if(int.TryParse(inputString, out value))
             {
+                AudioManager.instance.PlaySound(calculatorNumberPressAudioClip, 0.4f);
+
                 currentFine = value * 100;
                 currentFine = currentFine == 0 ? 1000 : currentFine;
 
@@ -665,6 +666,7 @@ public class FindShooterManager : MonoBehaviour
                             currentSelectedTower.DeselectTower();
                             currentSelectedTower = newTower;
                             currentSelectedTower.SelectTower();
+                            AudioManager.instance.PlaySound(towerSelectedAudioClip, 0.4f);
                         }
                         break;
                 }

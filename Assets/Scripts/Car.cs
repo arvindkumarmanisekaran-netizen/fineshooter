@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using DG.Tweening;
 using UnityEngine.Events;
+using TMPro;
 
 public class Car : MonoBehaviour
 {
@@ -69,6 +70,8 @@ public class Car : MonoBehaviour
 
     private Color fineColor;
 
+    public TMP_Text fineText;
+
     void Init()
     {
         car = GetComponentInChildren<SpriteRenderer>();
@@ -99,9 +102,15 @@ public class Car : MonoBehaviour
 
         this.fineColor = fineColor;
 
+        fineText.color = fineColor;
+
         gameObject.SetActive(true);
 
         this.fineAssigned = fineAssigned;
+
+        SetFineText();
+
+        fineText.gameObject.SetActive(false);
 
         transform.position = assignedPath[0];
 
@@ -114,16 +123,18 @@ public class Car : MonoBehaviour
     
     void InitialCarBlinker()
     {
+        fineText.gameObject.SetActive(false);
         car.DOKill();
         car.color = Color.white;
-        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(6, LoopType.Yoyo).SetDelay(1f).OnComplete(CarBlinker);
+        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(6, LoopType.Yoyo).SetDelay(1f).OnComplete(CarBlinker).OnUpdate(() => fineText.gameObject.SetActive(true));
     }
 
     void CarBlinker()
     {
+        fineText.gameObject.SetActive(false);
         car.DOKill();
         car.color = Color.white;
-        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(6, LoopType.Yoyo).SetDelay(6f).OnComplete(CarBlinker);
+        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(6, LoopType.Yoyo).SetDelay(6f).OnComplete(CarBlinker).OnUpdate(()=>fineText.gameObject.SetActive(true));
     }
 
     public void StartMoving(DOTweenPath path, float speed, int fineAssigned, Color fineColor, Action<int, Car> carMessageFunction)
@@ -142,6 +153,8 @@ public class Car : MonoBehaviour
         this.fineAssigned = fineAssigned;
 
         this.fineColor = fineColor;
+
+        fineText.color = fineColor;
 
         carState = eCarState.Moving;
 
@@ -246,6 +259,8 @@ public class Car : MonoBehaviour
     {
         fineAssigned -= bulletValue;
 
+        SetFineText();
+
         if(fineAssigned <= 0)
         {
             FreeCar();
@@ -254,6 +269,11 @@ public class Car : MonoBehaviour
         {
             transform.DOShakePosition(0.05f, 0.1f, 8);
         }
+    }
+
+    void SetFineText()
+    {
+        fineText.text = fineAssigned.ToString();
     }
 
     public void AssignPath(DOTweenPath path)
