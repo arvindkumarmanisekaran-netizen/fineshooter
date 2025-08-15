@@ -151,7 +151,7 @@ public class FindShooterManager : MonoBehaviour
         bgm.DOKill();
         bgm.DOFade(0.05f, 0.3f).SetEase(Ease.InOutQuad);
 
-        trafficAmbience.Play();
+        trafficAmbience.gameObject.SetActive(true);
 
         laserModeOnOff.Setup(OnLaserModeOnOffToggleClicked, laserAutoOn);
 

@@ -6920,7 +6920,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -70, y: 8}
+  m_AnchoredPosition: {x: -70, y: 66}
   m_SizeDelta: {x: 62, y: 53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1728571760
@@ -6977,7 +6977,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1752871349
 Transform:
   m_ObjectHideFlags: 0
@@ -7005,10 +7005,10 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: c8bfe57fa3376644a9aa6f3593ec3d0d, type: 3}
   m_Resource: {fileID: 8300000, guid: c8bfe57fa3376644a9aa6f3593ec3d0d, type: 3}
-  m_PlayOnAwake: 0
+  m_PlayOnAwake: 1
   m_Volume: 0.08
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -8150,7 +8150,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1000
+  m_text: 100
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0e658e22a07fd144eba6414a80d7d5fc, type: 2}
   m_sharedMaterial: {fileID: -2839096355389629246, guid: 0e658e22a07fd144eba6414a80d7d5fc, type: 2}
