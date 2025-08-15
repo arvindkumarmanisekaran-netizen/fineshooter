@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8328045266218983378}
   - component: {fileID: 4671948292972563966}
   - component: {fileID: 4696941012682391695}
-  - component: {fileID: -7399678553237565020}
   m_Layer: 5
   m_Name: Speeding_LVL2
   m_TagString: Untagged
@@ -76,19 +75,3 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &-7399678553237565020
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1976432397240727347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb117ba9c6d3d484ab6169eab59e8c8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  highlightColor: {r: 0.93962264, g: 0.28685626, b: 0.11878247, a: 1}
-  loops: 4
-  duration: 0.5
-  delay: 4

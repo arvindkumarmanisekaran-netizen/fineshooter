@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1187851863987993038}
   - component: {fileID: 2830371125329879336}
   - component: {fileID: 1370236008420823428}
-  - component: {fileID: 7919887048652230478}
   m_Layer: 5
   m_Name: Parking Violation
   m_TagString: Untagged
@@ -76,19 +75,3 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7919887048652230478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5854419473061951004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb117ba9c6d3d484ab6169eab59e8c8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  highlightColor: {r: 0.93962264, g: 0.28685626, b: 0.11878247, a: 1}
-  loops: 4
-  duration: 0.5
-  delay: 4

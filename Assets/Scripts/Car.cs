@@ -3,6 +3,7 @@ using System;
 using DG.Tweening;
 using UnityEngine.Events;
 using TMPro;
+using System.Collections;
 
 public class Car : MonoBehaviour
 {
@@ -103,14 +104,13 @@ public class Car : MonoBehaviour
         this.fineColor = fineColor;
 
         fineText.color = fineColor;
+        fineText.gameObject.SetActive(true);
 
         gameObject.SetActive(true);
 
         this.fineAssigned = fineAssigned;
 
         SetFineText();
-
-        fineText.gameObject.SetActive(false);
 
         transform.position = assignedPath[0];
 
@@ -123,19 +123,18 @@ public class Car : MonoBehaviour
     
     void InitialCarBlinker()
     {
-        fineText.gameObject.SetActive(false);
         car.DOKill();
         car.color = Color.white;
-        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(6, LoopType.Yoyo).SetDelay(1f).OnComplete(CarBlinker).OnUpdate(() => fineText.gameObject.SetActive(true));
+        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(6, LoopType.Yoyo).SetDelay(1f).OnComplete(CarBlinker).OnUpdate(() => { CarBlinker(); });
     }
 
     void CarBlinker()
     {
-        fineText.gameObject.SetActive(false);
         car.DOKill();
         car.color = Color.white;
-        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(6, LoopType.Yoyo).SetDelay(6f).OnComplete(CarBlinker).OnUpdate(()=>fineText.gameObject.SetActive(true));
+        car.DOColor(fineColor, 0.5f).SetEase(Ease.InOutQuad).SetLoops(6, LoopType.Yoyo).SetDelay(6f).OnComplete(() => { CarBlinker(); });
     }
+
 
     public void StartMoving(DOTweenPath path, float speed, int fineAssigned, Color fineColor, Action<int, Car> carMessageFunction)
     {
@@ -155,6 +154,9 @@ public class Car : MonoBehaviour
         this.fineColor = fineColor;
 
         fineText.color = fineColor;
+        fineText.gameObject.SetActive(true);
+
+        SetFineText();
 
         carState = eCarState.Moving;
 
@@ -259,16 +261,23 @@ public class Car : MonoBehaviour
     {
         fineAssigned -= bulletValue;
 
-        SetFineText();
-
-        if(fineAssigned <= 0)
+        if (fineAssigned <= 0)
         {
-            FreeCar();
+            fineText.gameObject.SetActive(false);
+            transform.DOShakePosition(0.07f, 0.1f, 8).OnComplete(() => StartCoroutine("ReleaseCar"));
         }
         else
         {
-            transform.DOShakePosition(0.05f, 0.1f, 8);
+            fineText.text = fineAssigned.ToString();
+            transform.DOShakePosition(0.07f, 0.1f, 8); 
         }
+    }
+
+    IEnumerator ReleaseCar()
+    {
+        yield return new WaitForSeconds(1f);
+
+        FreeCar();
     }
 
     void SetFineText()

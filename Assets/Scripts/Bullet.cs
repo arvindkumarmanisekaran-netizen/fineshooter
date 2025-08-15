@@ -20,7 +20,6 @@ public class Bullet : MonoBehaviour
     public AudioClip buildingHitClip;
     public AudioClip waterHitClip;
 
-
     public bool Fired
     {
         get { return fired; }
@@ -79,7 +78,7 @@ public class Bullet : MonoBehaviour
         {
             Car car = collider.gameObject.GetComponent<Car>();
 
-            if(bulletValue <= car.FineAssigned)
+            if(bulletValue == car.FineAssigned || (car.FineAssigned >= 1000 && bulletValue == 1000))
             {
                 car.BulletHit(bulletValue);
                 AudioManager.instance.PlaySound(carHitClip);
