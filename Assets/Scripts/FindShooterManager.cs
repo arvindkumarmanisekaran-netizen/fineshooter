@@ -32,6 +32,10 @@ public class FindShooterManager : MonoBehaviour
 
     public Tower[] towers;
 
+    public Sprite[] gibberishSprites;
+
+    public AudioClip[] policeSirensAudioClips;
+
     private Tower currentSelectedTower;
 
     private int numTries = 100;
@@ -50,33 +54,35 @@ public class FindShooterManager : MonoBehaviour
     public float bk_glow_duration;
     public float bk_glow_fade_amount;
 
-    private int currentFine = 100;
+    private int currentFine = 0;
 
     public LineRenderer rayFromTower;
 
-    public Texture2D cursorTexture;
-    private Vector2 cursorOffset = new Vector2(16f, 16f);
-
     public TMP_Text fineText;
     public Image fineSelector;
-    private Vector2 selectorStart = new Vector2(-70f, 66f);
-    private Vector2 selectorMoveOffset = new Vector2(70f, -58f);
+    private Vector2 selectorStart = new Vector2(-57f, 50f);
+    private Vector2 selectorMoveOffset = new Vector2(57f, -50f);
 
     public Image mainMenu;
     public Sprite mainMenuOn;
     public Sprite mainMenuOff;
 
-    public GameObject creditScreen;
+    public CanvasGroup mainMenuScreen;
+    public CanvasGroup autoToggleScreen;
+    public CanvasGroup creditScreen;
 
     public AudioSource bgm;
     public AudioSource trafficAmbience;
     public AudioSource micAudioSource;
     public AudioSource laserLoopAudioSource;
 
-    public AudioClip[] policeSirensAudioClips;
-
     public SpriteRenderer towerOn;
 
+    public Image introImage_1;
+    public Image introImage_2;
+    public Image introImage_3;
+
+    private bool pressOne = false;
 
     public class VoilationCarMap
     {
@@ -93,17 +99,12 @@ public class FindShooterManager : MonoBehaviour
     private List<VoilationCarMap> spawnedCars = new List<VoilationCarMap>();
     private bool spawningLevel = false;
 
-    private bool smalliPadShown = false;
-    public Image smalliPad;
-    public Image bigiPad;
-
     public Image crackle;
 
     private Level currentLevel;
 
     public Transform voilationCardHolder;
 
-    public Sprite[] gibberishSprites;
     public Image gibberishImage;
 
     public LaserModeOnOff laserModeOnOff;
@@ -119,6 +120,10 @@ public class FindShooterManager : MonoBehaviour
 
         pathManager = GetComponentInChildren<PathManager>();
         levelManager = GetComponentInChildren<LevelManager>();
+
+        laserModeOnOff.enabled = false;
+
+        fineSelector.gameObject.SetActive(false);
 
         Random.InitState(seed);
         
@@ -156,6 +161,9 @@ public class FindShooterManager : MonoBehaviour
     {
         gameState = eGameState.AutoToggle;
 
+        mainMenuScreen.DOFade(0f, 1f).OnComplete(() => mainMenuScreen.gameObject.SetActive(false));
+        autoToggleScreen.DOFade(1f, 1f);
+
         bgm.DOKill();
         bgm.DOFade(0.05f, 0.3f).SetEase(Ease.InOutQuad);
 
@@ -169,7 +177,40 @@ public class FindShooterManager : MonoBehaviour
 
         StartCoroutine("TowerOnOff");
 
-        mainMenu.gameObject.SetActive(false);
+        StartCoroutine("AutoToggle");
+    }
+
+    IEnumerator AutoToggle()
+    {
+        introImage_1.DOKill();
+        introImage_1.DOFade(1f, 1f);
+
+        yield return new WaitForSeconds(4f);
+
+        introImage_1.DOFade(0f, 1f);
+        introImage_2.DOFade(1f, 1f);
+
+        yield return new WaitForSeconds(1f);
+
+        pressOne = true;
+
+        yield return new WaitUntil(() => currentFine == 100);
+
+        pressOne = false;
+
+        laserModeOnOff.enabled = true;
+
+        introImage_2.DOFade(0f, 1f);
+        introImage_3.DOFade(1f, 1f);
+
+        fineSelector.gameObject.SetActive(true);
+        SetCurrentFine();
+
+        yield return new WaitUntil(() => !laserAutoOn);
+
+        laserModeOnOff.enabled = false;
+
+        introImage_3.DOFade(0f, 0.2f);
     }
 
     public void BackClicked()
@@ -202,8 +243,6 @@ public class FindShooterManager : MonoBehaviour
         SetCurrentFine();
 
         SetCurrentLevel();
-
-        ToggleiPAD();
     }
 
     void OnLaserModeOnOffToggleClicked()
@@ -215,6 +254,8 @@ public class FindShooterManager : MonoBehaviour
         if (!laserAutoOn)
         {
             gameState = eGameState.Playing;
+
+            autoToggleScreen.DOFade(0f, 0.5f).OnComplete(() => autoToggleScreen.gameObject.SetActive(false));
 
             StopCoroutine("TowerOnOff");
 
@@ -238,18 +279,10 @@ public class FindShooterManager : MonoBehaviour
 
             int randomPoliceSiren = Random.Range(0, policeSirensAudioClips.Length);
 
-            AudioManager.instance.PlaySound(policeSirensAudioClips[randomPoliceSiren], 0.2f);
+            AudioManager.instance.PlaySound(policeSirensAudioClips[randomPoliceSiren], 0.1f);
 
             yield return new WaitForSeconds(policeSirensAudioClips[randomPoliceSiren].length);
         }
-    }
-
-    void ToggleiPAD()
-    {
-        smalliPadShown = !smalliPadShown;
-
-        smalliPad.gameObject.SetActive(smalliPadShown);
-        bigiPad.gameObject.SetActive(!smalliPadShown);
     }
 
     private void LevelComplete()
@@ -266,11 +299,13 @@ public class FindShooterManager : MonoBehaviour
         {
             gameState = eGameState.GameOver;
 
+            Cursor.visible = true;
+
             laserLoopAudioSource.Stop();
 
             StopCoroutine("PoliceSirens");
-
-            creditScreen.SetActive(true);
+            
+            creditScreen.DOFade(1f, 1f);
         }
     }
 
@@ -406,24 +441,29 @@ public class FindShooterManager : MonoBehaviour
             spawnedVoilationCard.transform.SetAsFirstSibling();
 
             gibberishImage.sprite = gibberishSprites[Random.Range(0, gibberishSprites.Length)];
+            gibberishImage.color = Color.white;
             spawnedCars.Add(new VoilationCarMap(car, spawnedVoilationCard));
 
             crackle.transform.DOKill();
             crackle.transform.DOBlendableScaleBy(new Vector3(0f, -0.5f, 0f), 0.1f).SetEase(Ease.OutBounce)
                 .SetLoops(-1, LoopType.Yoyo);
 
-            if (micAudioClip != null)
-            {
-                micAudioSource.clip = micAudioClip;
-                micAudioSource.Play();
-            }
+            micAudioSource.clip = micAudioClip;
+            micAudioSource.Play();
+
+            float waitTime = micAudioClip.length;
 
             if (sfxAudioClip != null)
             {
-                AudioManager.instance.PlaySound(sfxAudioClip, 0.2f);
+                AudioManager.instance.PlaySound(sfxAudioClip, 0.4f);
+
+                if (sfxAudioClip.length > waitTime)
+                {
+                    waitTime = sfxAudioClip.length;
+                }
             }
 
-            yield return new WaitForSeconds(micAudioClip.length);
+            yield return new WaitForSeconds(waitTime);
 
             crackle.transform.DOKill();
             crackle.transform.localScale = Vector3.one;
@@ -466,7 +506,7 @@ public class FindShooterManager : MonoBehaviour
         {
             case 1:
                 ReleaseCar(car);
-                AudioManager.instance.PlaySound(voilatorEliminated, 1f);
+                AudioManager.instance.PlaySound(voilatorEliminated, 0.4f);
                 break;
 
             case 2:
@@ -514,7 +554,6 @@ public class FindShooterManager : MonoBehaviour
         LevelComplete();
     }
 
-
     public void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -524,9 +563,24 @@ public class FindShooterManager : MonoBehaviour
         }
 
         if ( gameState == eGameState.MainMenu ||
-            gameState == eGameState.AutoToggle ||
             gameState == eGameState.GameOver )
         {
+            return;
+        }
+
+        if (gameState == eGameState.AutoToggle)
+        {
+            if (pressOne && Input.anyKeyDown)
+            {
+                string inputString = Input.inputString.ToLower();
+
+                int value;
+                if (int.TryParse(inputString, out value))
+                {
+                    currentFine = value * 100;
+                }
+            }
+
             return;
         }
 
@@ -565,11 +619,6 @@ public class FindShooterManager : MonoBehaviour
         {
             Application.Quit();
             return;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            ToggleiPAD();
         }
 
         if (Input.anyKeyDown)
